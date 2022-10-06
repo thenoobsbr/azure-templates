@@ -5,7 +5,7 @@ parameters:
   type: string
   default: 'Azure Pipelines'
 - name: dependsOn
-  type: array
+  type: object
   default:
   - library_build
 - name: environment

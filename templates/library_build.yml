@@ -9,7 +9,7 @@ parameters:
   type: string
   default: 'Azure Pipelines'
 - name: depends_on
-  type: array
+  type: object
   default:
   - gitflow_calculate_version
 - name: version
