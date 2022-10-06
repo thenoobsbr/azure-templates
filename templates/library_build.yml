@@ -1,13 +1,17 @@
 parameters:
 - name: artifact_name
   type: string
+  default: 'library'
 - name: projects
   type: string
+  default: 'src/**/*.csproj'
 - name: pool
   type: string
   default: 'Azure Pipelines'
 - name: depends_on
   type: array
+  default:
+  - gitflow_calculate_version
 - name: version
   type: string
   default: $(Build.BuildNumber)
