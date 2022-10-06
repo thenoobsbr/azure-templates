@@ -76,9 +76,6 @@ stages:
         custom: tool
         arguments: update dotnet-reportgenerator-globaltool --tool-path tools --ignore-failed-sources
 
-    - bash: echo "##vso[task.prependpath]$HOME/.dotnet/tools"
-      displayName: 'Update PATH'    
-
     - bash: |
         ls $(Pipeline.Workspace)/project/test*/**/*.csproj | xargs -L1 dotnet test --collect:"XPlat Code Coverage" --settings $COVERLET_PATH --logger trx
       displayName: Test
