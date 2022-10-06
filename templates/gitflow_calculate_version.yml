@@ -5,7 +5,7 @@ parameters:
 
 stages:
 - stage: gitflow_calculate_version
-  displayName: 'Calculate Version For GitFlow'
+  displayName: 'Calculate Version'
   pool:
     name: ${{parameters.pool}}
   jobs:
