@@ -74,7 +74,7 @@ stages:
       inputs:
         command: custom
         custom: tool
-        arguments: update dotnet-reportgenerator-globaltool -g --ignore-failed-sources
+        arguments: update dotnet-reportgenerator-globaltool --tool-path tools --ignore-failed-sources
 
     - bash: echo "##vso[task.prependpath]$HOME/.dotnet/tools"
       displayName: 'Update PATH'    
@@ -86,7 +86,7 @@ stages:
         COVERLET_PATH: '$(Pipeline.Workspace)/templates/coverlet/coverlet.runsettings'
 
     - bash: |
-        reportgenerator "-reports:$(Pipeline.Workspace)/project/test*/*/TestResults/*/coverage.cobertura.xml" "-targetdir:Reports_Coverage" -reportTypes:Cobertura;
+        ./tools/reportgenerator "-reports:$(Pipeline.Workspace)/project/test*/*/TestResults/*/coverage.cobertura.xml" "-targetdir:Reports_Coverage" -reportTypes:Cobertura;
       displayName: Generate code coverage report
 
     - task: PublishTestResults@2
