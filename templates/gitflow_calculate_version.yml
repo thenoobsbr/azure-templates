@@ -1,0 +1,27 @@
+parameters:
+- name: pool
+  type: string
+  default: 'Azure Pipelines'
+
+stages:
+- stage: gitflow_calculate_version
+  displayName: 'Calculate Version For GitFlow'
+  pool:
+    name: ${{parameters.pool}}
+  jobs:
+  - job: calculate_version
+    variables:
+      release: $[counter(variables['Build.SourceBranchName'], 1)]
+    steps:    
+    - checkout: 'templates'
+    
+    - task: Bash@3
+      name: calculate_version
+      displayName: 'Calculate Version'
+      inputs:
+        filePath: './scripts/compute_version.sh'
+      env:
+        SOURCE_VERSION_MESSAGE: $(Build.SourceVersionMessage)
+        SOURCE_BRANCH: $(Build.SourceBranch)
+        PR_SOURCE_BRANCH: $(System.PullRequest.SourceBranch)
+        REASON: $(Build.Reason)

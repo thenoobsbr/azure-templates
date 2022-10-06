@@ -1,0 +1,37 @@
+parameters:
+- name: artifact_name
+  type: string
+- name: pool
+  type: string
+  default: 'Azure Pipelines'
+- name: dependsOn
+  type: array
+  default:
+  - library_build
+- name: environment
+  type: string
+  default: 'Production'
+
+stages:
+- stage: library_deploy
+  displayName: 'Library Deploy'
+  pool:
+    name: ${{parameters.pool}}
+  dependsOn: ${{parameters.depends_on}}
+  condition: succeeded()
+  jobs:
+  - deployment: library_deployment
+    environment: ${{parameters.environment}}
+    workspace:
+      clean: all
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: DotNetCoreCLI@2
+            displayName: 'Push to Nuget'
+            inputs:
+              command: 'push'
+              packagesToPush: '$(Pipeline.Workspace)/${{parameters.artifact_name}}/!(*symbols).nupkg'
+              publishPackageMetadata: false
+              includesymbols: true

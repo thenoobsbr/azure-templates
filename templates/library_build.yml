@@ -1,0 +1,133 @@
+parameters:
+- name: artifact_name
+  type: string
+- name: projects
+  type: string
+- name: pool
+  type: string
+  default: 'Azure Pipelines'
+- name: depends_on
+  type: array
+- name: version
+  type: string
+  default: $(Build.BuildNumber)
+- name: sonar_organization
+  type: string
+  default: $(SONAR_ORGANIZATION)
+- name: sonar_project_key
+  type: string
+  default: $(SONAR_PROJECTKEY)
+
+stages:
+- stage: library_build
+  displayName: 'Library Build'
+  pool:
+    name: ${{parameters.pool}}
+  dependsOn: ${{parameters.depends_on}}
+  jobs:
+  - job: Build
+    condition: succeeded()
+    variables:
+      version: ${{parameters.version}}
+    steps:
+    - checkout: self
+      path: 'project'
+
+    - checkout: 'templates'
+      path: 'templates'
+
+    - task: SonarCloudPrepare@1
+      inputs:
+        SonarCloud: 'SonarCloud'
+        organization: ${{parameters.sonar_organization}}
+        scannerMode: 'MSBuild'
+        projectKey: ${{parameters.sonar_project_key}}
+        projectVersion: '${{parameters.version}}'
+        extraProperties: |
+          # Additional properties that will be passed to the scanner, 
+          # Put one key=value per line, example:
+          sonar.exclusions=**/*test*
+          sonar.exclusions=**/lib/**
+
+    - task: DotNetCoreCLI@2
+      displayName: 'Restore'
+      inputs:
+        command: 'restore'
+        projects: '$(Pipeline.Workspace)/project/${{parameters.projects}}'
+
+    - task: DotNetCoreCLI@2
+      displayName: 'Build'
+      inputs:
+        command: 'build'
+        projects: '$(Pipeline.Workspace)/project/${{parameters.projects}}'
+        arguments: '--no-restore --configuration Release'
+
+    - task: DotNetCoreCLI@2
+      displayName: Install ReportGenerator Global Tool
+      inputs:
+        command: custom
+        custom: tool
+        arguments: update dotnet-reportgenerator-globaltool -g --ignore-failed-sources
+
+    - bash: echo "##vso[task.prependpath]$HOME/.dotnet/tools"
+      displayName: 'Update PATH'    
+
+    - bash: |
+        ls $(Pipeline.Workspace)/project/test*/**/*.csproj | xargs -L1 dotnet test --collect:"XPlat Code Coverage" --settings $COVERLET_PATH --logger trx
+      displayName: Test
+      env:
+        COVERLET_PATH: '$(Pipeline.Workspace)/templates/coverlet/coverlet.runsettings'
+
+    - bash: |
+        reportgenerator "-reports:$(Pipeline.Workspace)/project/test*/*/TestResults/*/coverage.cobertura.xml" "-targetdir:Reports_Coverage" -reportTypes:Cobertura;
+      displayName: Generate code coverage report
+
+    - task: PublishTestResults@2
+      inputs:
+        testResultsFormat: 'VSTest'
+        testResultsFiles: '$(Pipeline.Workspace)/project/**/*.trx'
+        mergeTestResults: true
+      displayName: Publish test result
+
+    - task: PublishCodeCoverageResults@1
+      inputs:
+        codeCoverageTool: 'Cobertura' 
+        summaryFileLocation: $(Pipeline.Workspace)/project/Reports_Coverage/Cobertura.xml
+        pathToSources: $(Pipeline.Workspace)/project/src/
+      displayName: Publish coverage
+    
+    - task: SonarCloudAnalyze@1
+      displayName: 'Run Code Analysis'
+
+    - task: SonarCloudPublish@1
+      displayName: 'Publish Quality Gate Result'
+
+    - task: DotNetCoreCLI@2
+      displayName: Pack
+      inputs:
+        command: pack
+        packagesToPack: '$(Pipeline.Workspace)/project/${{parameters.projects}}'
+        configurationToPack: 'Release'
+        versioningScheme: byEnvVar
+        versionEnvVar: version
+        outputDir: '$(Build.ArtifactStagingDirectory)'
+        includesymbols: true
+  
+    - task: DotNetCoreCLI@2
+      displayName: Publish
+      inputs:
+        command: 'publish'
+        publishWebProjects: false
+        projects: '$(Pipeline.Workspace)/project/${{parameters.projects}}'
+        arguments: '-o $(Build.ArtifactStagingDirectory)'
+        zipAfterPublish: true
+        modifyOutputPath: true
+        configuration: 'Release'
+        versioningScheme: byEnvVar
+        versionEnvVar: version
+
+    - task: PublishPipelineArtifact@1
+      displayName: Store Application Artifact
+      inputs:
+        targetPath: '$(System.ArtifactsDirectory)'
+        artifact: '${{parameters.artifact_name}}'
