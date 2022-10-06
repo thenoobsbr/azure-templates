@@ -8,6 +8,9 @@ parameters:
 - name: pool
   type: string
   default: 'Azure Pipelines'
+  values:
+  - 'Azure Pipelines'
+  - 'Self-hosted'
 - name: depends_on
   type: object
   default:

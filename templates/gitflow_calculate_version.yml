@@ -2,6 +2,9 @@ parameters:
 - name: pool
   type: string
   default: 'Azure Pipelines'
+  values:
+  - 'Azure Pipelines'
+  - 'Self-hosted'
 
 stages:
 - stage: gitflow_calculate_version
