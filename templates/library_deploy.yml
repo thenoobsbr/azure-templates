@@ -20,9 +20,6 @@ parameters:
   type: object
   default:
   - net6.0
-- name: feed
-  type: string
-  default: 'Nuget'
 
 stages:
 - stage: library_deploy
@@ -49,4 +46,4 @@ stages:
                 publishPackageMetadata: false
                 includesymbols: true
                 nuGetFeedType: 'external'
-                publishFeedCredentials: ${{ parameters.feed }}
+                publishFeedCredentials: 'Nuget'
