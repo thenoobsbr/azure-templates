@@ -22,7 +22,7 @@ parameters:
   - net6.0
 - name: feed
   type: string
-  default: '68e046c8-6357-4886-b971-0b7324cc4148'
+  default: 'Nuget'
 
 stages:
 - stage: library_deploy
@@ -48,5 +48,5 @@ stages:
                 packagesToPush: '$(Pipeline.Workspace)/${{parameters.artifact_name}}/!(*symbols).nupkg'
                 publishPackageMetadata: false
                 includesymbols: true
-                feedsToUse: 'select'
-                vstsFeed: ${{parameters.feed}}
+                nuGetFeedType: 'external'
+                publishFeedCredentials: ${{ parameters.feed }}
