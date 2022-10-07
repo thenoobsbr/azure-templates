@@ -42,6 +42,6 @@ stages:
           deploy:
             steps:
             - bash: |
-                ls $(Pipeline.Workspace)/**/*$(Build.BuildNumber).nupkg | xargs -L1 dotnet push -k ${{ parameters.nuget_api_key }}
+                ls $(Pipeline.Workspace)/**/*$(Build.BuildNumber).nupkg | xargs -L1 dotnet nuget push -k ${{ parameters.nuget_api_key }}
               displayName: 'Push to Nuget'
               name: nuget_push
