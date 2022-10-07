@@ -22,7 +22,6 @@ parameters:
   - net6.0
 - name: nuget_api_key
   type: string
-  default: $(NUGET_API_KEY)
 
 stages:
 - stage: library_deploy
