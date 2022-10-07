@@ -20,6 +20,9 @@ parameters:
   type: object
   default:
   - net6.0
+- name: nuget_api_key
+  type: string
+  default: $(NUGET_API_KEY)
 
 stages:
 - stage: library_deploy
@@ -38,12 +41,7 @@ stages:
         runOnce:
           deploy:
             steps:
-            - task: DotNetCoreCLI@2
+            - bash: |
+                dotnet push $(Pipeline.Workspace)/${{parameters.artifact_name}}/!(*symbols).nupkg -k ${{ parameters.nuget_api_key }}
               displayName: 'Push to Nuget'
-              inputs:
-                command: 'push'
-                packagesToPush: '$(Pipeline.Workspace)/${{parameters.artifact_name}}/!(*symbols).nupkg'
-                publishPackageMetadata: false
-                includesymbols: true
-                nuGetFeedType: 'external'
-                publishFeedCredentials: 'Nuget'
+              name: nuget_push
