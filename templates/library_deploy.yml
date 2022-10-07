@@ -1,6 +1,7 @@
 parameters:
 - name: artifact_name
   type: string
+  default: 'library'
 - name: pool
   type: string
   default: 'Azure Pipelines'
@@ -14,6 +15,10 @@ parameters:
 - name: environment
   type: string
   default: 'Production'
+- name: target_frameworks
+  type: object
+  default:
+  - net6.0
 
 stages:
 - stage: library_deploy

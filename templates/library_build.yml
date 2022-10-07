@@ -129,7 +129,7 @@ stages:
           command: 'publish'
           publishWebProjects: false
           projects: '$(Pipeline.Workspace)/project/${{parameters.projects}}'
-          arguments: '-o $(Build.ArtifactStagingDirectory) -f ${{ framework }}'
+          arguments: '-c Release -o $(Build.ArtifactStagingDirectory)/${{ framework }} -f ${{ framework }}'
           zipAfterPublish: true
           modifyOutputPath: true
           configuration: 'Release'
