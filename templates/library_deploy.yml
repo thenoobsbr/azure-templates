@@ -12,9 +12,10 @@ parameters:
   type: object
   default:
   - library_build
-- name: environment
-  type: string
-  default: 'Production'
+- name: environments
+  type: object
+  default: 
+  - Production
 - name: target_frameworks
   type: object
   default:
@@ -28,18 +29,19 @@ stages:
   dependsOn: ${{parameters.depends_on}}
   condition: succeeded()
   jobs:
-  - deployment: library_deployment
-    environment: ${{parameters.environment}}
-    workspace:
-      clean: all
-    strategy:
-      runOnce:
-        deploy:
-          steps:
-          - task: DotNetCoreCLI@2
-            displayName: 'Push to Nuget'
-            inputs:
-              command: 'push'
-              packagesToPush: '$(Pipeline.Workspace)/${{parameters.artifact_name}}/!(*symbols).nupkg'
-              publishPackageMetadata: false
-              includesymbols: true
+  - ${{ each environment in parameters.environments }}:
+    - deployment: library_deployment_${{environment}}
+      environment: ${{environment}}
+      workspace:
+        clean: all
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            - task: DotNetCoreCLI@2
+              displayName: 'Push to Nuget'
+              inputs:
+                command: 'push'
+                packagesToPush: '$(Pipeline.Workspace)/${{parameters.artifact_name}}/!(*symbols).nupkg'
+                publishPackageMetadata: false
+                includesymbols: true
