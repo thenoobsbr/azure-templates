@@ -22,7 +22,7 @@ stages:
       name: calculate_version
       displayName: 'Calculate Version'
       inputs:
-        filePath: './scripts/compute_version.sh'
+        filePath: './scripts/calculate_version.sh'
       env:
         SOURCE_VERSION_MESSAGE: $(Build.SourceVersionMessage)
         SOURCE_BRANCH: $(Build.SourceBranch)
