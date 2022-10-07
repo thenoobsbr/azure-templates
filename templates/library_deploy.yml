@@ -8,7 +8,7 @@ parameters:
   values:
   - 'Azure Pipelines'
   - 'Self-hosted'
-- name: dependsOn
+- name: depends_on
   type: object
   default:
   - library_build
