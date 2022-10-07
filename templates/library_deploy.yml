@@ -22,6 +22,7 @@ parameters:
   - net6.0
 - name: nuget_api_key
   type: string
+  default: $(NUGET_API_KEY)
 
 stages:
 - stage: library_deploy
@@ -41,6 +42,6 @@ stages:
           deploy:
             steps:
             - bash: |
-                dotnet push $(Pipeline.Workspace)/${{parameters.artifact_name}}/!(*symbols).nupkg -k ${{ parameters.nuget_api_key }}
+                ls $(Pipeline.Workspace)/${{parameters.artifact_name}}/!(*symbols).nupkg | xargs -L1 dotnet push -k ${{ parameters.nuget_api_key }}
               displayName: 'Push to Nuget'
               name: nuget_push
