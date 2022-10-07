@@ -24,6 +24,10 @@ parameters:
 - name: sonar_project_key
   type: string
   default: $(SONAR_PROJECTKEY)
+- name: target_frameworks
+  type: object
+  default:
+  - net6.0
 
 stages:
 - stage: library_build
@@ -117,18 +121,19 @@ stages:
         outputDir: '$(Build.ArtifactStagingDirectory)'
         includesymbols: true
   
-    - task: DotNetCoreCLI@2
-      displayName: Publish
-      inputs:
-        command: 'publish'
-        publishWebProjects: false
-        projects: '$(Pipeline.Workspace)/project/${{parameters.projects}}'
-        arguments: '-o $(Build.ArtifactStagingDirectory)'
-        zipAfterPublish: true
-        modifyOutputPath: true
-        configuration: 'Release'
-        versioningScheme: byEnvVar
-        versionEnvVar: version
+    - ${{ each framework in parameters.target_frameworks }}:
+      - task: DotNetCoreCLI@2
+        displayName: Publish
+        inputs:
+          command: 'publish'
+          publishWebProjects: false
+          projects: '$(Pipeline.Workspace)/project/${{parameters.projects}}'
+          arguments: '-o $(Build.ArtifactStagingDirectory) -f ${{ framework }}'
+          zipAfterPublish: true
+          modifyOutputPath: true
+          configuration: 'Release'
+          versioningScheme: byEnvVar
+          versionEnvVar: version
 
     - task: PublishPipelineArtifact@1
       displayName: Store Application Artifact
