@@ -9,7 +9,7 @@ then
     echo "PR Branch: $PR_SOURCE_BRANCH"
     export SOURCE_BRANCH="$PR_SOURCE_BRANCH";
 fi
-echo "CurrentCounter: $RELEASE"
+echo "Release: $RELEASE"
 echo "Reason: $REASON"
 echo "======================================="
 
@@ -91,8 +91,7 @@ then
     exit 0
 fi
 
-if [[ $SOURCE_BRANCH =~ "/hotfix/" ]] ||
-    [[ $SOURCE_BRANCH =~ "/release/" ]];
+if [[ $SOURCE_BRANCH =~ "/hotfix/" || $SOURCE_BRANCH =~ "/release/" ]];
 then
     echo "========================="
     echo "    HOTFIX / RELEASE     "
