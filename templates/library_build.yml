@@ -59,7 +59,6 @@ stages:
           # Put one key=value per line, example:
           sonar.exclusions=**/*test*
           sonar.exclusions=**/lib/**
-          sonar.coverageReportPaths=Reports_Coverage/Cobertura.xml
 
     - task: DotNetCoreCLI@2
       displayName: 'Restore'
@@ -88,7 +87,7 @@ stages:
         COVERLET_PATH: '$(Pipeline.Workspace)/templates/coverlet/coverlet.runsettings'
 
     - bash: |
-        ./tools/reportgenerator "-reports:$(Pipeline.Workspace)/project/test*/*/TestResults/*/coverage.cobertura.xml" "-targetdir:Reports_Coverage" -reportTypes:Cobertura;
+        ./tools/reportgenerator "-reports:$(Pipeline.Workspace)/project/test*/*/TestResults/*/coverage.cobertura.xml" "-targetdir:$(Pipeline.Workspace)/project/Reports_Coverage" -reportTypes:Cobertura;
       displayName: Generate code coverage report
 
     - task: PublishTestResults@2
