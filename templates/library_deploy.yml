@@ -23,6 +23,9 @@ parameters:
 - name: nuget_api_key
   type: string
   default: $(NUGET_API_KEY)
+- name: nuget_source_url
+  type: string
+  default: https://api.nuget.org/v3/index.json
 
 stages:
 - stage: library_deploy
@@ -42,6 +45,6 @@ stages:
           deploy:
             steps:
             - bash: |
-                ls $(Pipeline.Workspace)/**/*$(Build.BuildNumber).nupkg | xargs -L1 dotnet nuget push -k ${{ parameters.nuget_api_key }}
+                ls $(Pipeline.Workspace)/**/*$(Build.BuildNumber).nupkg | xargs -L3 dotnet nuget push -k ${{ parameters.nuget_api_key }} -s ${{ parameters.nuget_source_url }}
               displayName: 'Push to Nuget'
               name: nuget_push
