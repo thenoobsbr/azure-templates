@@ -59,6 +59,7 @@ stages:
           # Put one key=value per line, example:
           sonar.exclusions=**/*test*
           sonar.exclusions=**/lib/**
+          sonar.coverageReportPaths=$(Pipeline.Workspace)/project/Reports_Coverage
 
     - task: DotNetCoreCLI@2
       displayName: 'Restore'
