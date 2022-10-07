@@ -88,7 +88,7 @@ stages:
         COVERLET_PATH: '$(Pipeline.Workspace)/templates/coverlet/coverlet.runsettings'
 
     - bash: |
-        ./tools/reportgenerator "-reports:$(Pipeline.Workspace)/project/test*/*/TestResults/*/coverage.cobertura.xml" "-targetdir:$(Pipeline.Workspace)/project/Reports_Coverage" -reportTypes:Cobertura;SonarQube;
+        ./tools/reportgenerator "-reports:$(Pipeline.Workspace)/project/test*/*/TestResults/*/coverage.cobertura.xml" "-targetdir:$(Pipeline.Workspace)/project/Reports_Coverage" -reportTypes:"Cobertura;SonarQube";
       displayName: Generate code coverage report
 
     - task: PublishTestResults@2
