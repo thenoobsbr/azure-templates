@@ -26,7 +26,7 @@ stages:
       name: calculate_version
       displayName: 'Calculate Version'
       inputs:
-        filePath: './templates/scripts/calculate_version.sh'
+        filePath: '../templates/scripts/calculate_version.sh'
         workingDirectory: './project'
       env:
         SOURCE_VERSION_MESSAGE: $(Build.SourceVersionMessage)
