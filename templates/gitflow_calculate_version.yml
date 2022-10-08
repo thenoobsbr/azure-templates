@@ -16,13 +16,18 @@ stages:
     variables:
       release: $[counter(variables['Build.SourceBranchName'], 1)]
     steps:    
+    - checkout: 'self'
+      path: 'project'
+
     - checkout: 'templates'
+      path: 'templates'
     
     - task: Bash@3
       name: calculate_version
       displayName: 'Calculate Version'
       inputs:
-        filePath: './scripts/calculate_version.sh'
+        filePath: './templates/scripts/calculate_version.sh'
+        workingDirectory: './project'
       env:
         SOURCE_VERSION_MESSAGE: $(Build.SourceVersionMessage)
         SOURCE_BRANCH: $(Build.SourceBranch)
