@@ -1,3 +1,7 @@
+export VERSION_MAJOR="$(git describe --tags --abbrev=0 | cut -d'.' -f1)"
+export VERSION_MINOR="$(git describe --tags --abbrev=0 | cut -d'.' -f2)"
+export VERSION_PATCH="$(git describe --tags --abbrev=0 | cut -d'.' -f3)"
+
 echo "======================================="
 echo "              INPUT                    "
 echo "======================================="
@@ -11,7 +15,11 @@ then
 fi
 echo "Release: $RELEASE"
 echo "Reason: $REASON"
+echo "Version.Major: $VERSION_MAJOR"
+echo "Version.Minor: $VERSION_MINOR"
+echo "Version.Patch: $VERSION_PATCH"
 echo "======================================="
+
 
 if [[ $SOURCE_BRANCH =~ "/tags/" ]];
 then
@@ -45,6 +53,8 @@ then
     echo "         FEATURE         "
     echo "========================="
     
+    VERSION_MINOR=$((VERSION_MINOR+1))
+    
     export VERSION_PREFIX="$VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH"
     export VERSION_SUFFIX="beta.${RELEASE}"
     export VERSION="$VERSION_PREFIX-$VERSION_SUFFIX"
@@ -70,6 +80,8 @@ then
     echo "========================="
     echo "         BUGFIX          "
     echo "========================="
+
+    VERSION_PATCH=$((VERSION_PATCH+1))
     
     export VERSION_PREFIX="$VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH"
     export VERSION_SUFFIX="beta.${RELEASE}"
@@ -125,6 +137,8 @@ fi
 echo "======================================="
 echo "              OTHERS                   "
 echo "======================================="
+
+VERSION_MAJOR=$((VERSION_MAJOR+1))
 
 export VERSION_PREFIX="$VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH"
 export VERSION_SUFFIX="alpha.${RELEASE}"
