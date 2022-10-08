@@ -26,8 +26,8 @@ stages:
       name: calculate_version
       displayName: 'Calculate Version'
       inputs:
-        filePath: '../templates/scripts/calculate_version.sh'
-        workingDirectory: './project'
+        filePath: '$(Pipeline.Workspace)/templates/scripts/calculate_version.sh'
+        workingDirectory: '$(Pipeline.Workspace)/project'
       env:
         SOURCE_VERSION_MESSAGE: $(Build.SourceVersionMessage)
         SOURCE_BRANCH: $(Build.SourceBranch)
