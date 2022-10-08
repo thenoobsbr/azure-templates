@@ -1,10 +1,10 @@
-export VERSION_MAJOR="$(git describe --tags --abbrev=0 | cut -d'.' -f1)"
-export VERSION_MINOR="$(git describe --tags --abbrev=0 | cut -d'.' -f2)"
-export VERSION_PATCH="$(git describe --tags --abbrev=0 | cut -d'.' -f3)"
+export VERSION_MAJOR="1"
+export VERSION_MINOR="0"
+export VERSION_PATCH="0"
 
-VERSION_MAJOR=${VERSION_MAJOR:-1}
-VERSION_MINOR=${VERSION_MINOR:-0}
-VERSION_PATCH=${VERSION_PATCH:-0}
+VERSION_MAJOR="$(git describe --tags --abbrev=0 | cut -d'.' -f1)"
+VERSION_MINOR="$(git describe --tags --abbrev=0 | cut -d'.' -f2)"
+VERSION_PATCH="$(git describe --tags --abbrev=0 | cut -d'.' -f3)"
 
 echo "======================================="
 echo "              INPUT                    "
