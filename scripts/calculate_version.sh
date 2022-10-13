@@ -34,16 +34,12 @@ then
     echo "========================="
     
     echo "##vso[task.setvariable variable=version;isOutput=true]$VERSION"
-    echo "##vso[task.setvariable variable=staging_deploy;isOutput=true]True"
-    echo "##vso[task.setvariable variable=production_deploy;isOutput=true]True"
     echo "##vso[build.updatebuildnumber]$VERSION"
     
     echo "======================================="
     echo "              OUTPUT                   "
     echo "======================================="
     echo "Version: $VERSION"
-    echo "Staging deploy: TRUE"
-    echo "Production deploy: TRUE"
     echo "======================================="
     
     exit 0
@@ -64,16 +60,12 @@ then
     export VERSION="$VERSION_PREFIX-$VERSION_SUFFIX"
     
     echo "##vso[task.setvariable variable=version;isOutput=true]$VERSION"
-    echo "##vso[task.setvariable variable=staging_deploy;isOutput=true]False"
-    echo "##vso[task.setvariable variable=production_deploy;isOutput=true]False"
     echo "##vso[build.updatebuildnumber]$VERSION"
     
     echo "======================================="
     echo "              OUTPUT                   "
     echo "======================================="
     echo "Version: $VERSION"
-    echo "Staging deploy: FALSE"
-    echo "Production deploy: FALSE"
     echo "======================================="
     
     exit 0
@@ -92,16 +84,12 @@ then
     export VERSION="$VERSION_PREFIX-$VERSION_SUFFIX"
     
     echo "##vso[task.setvariable variable=version;isOutput=true]$VERSION"
-    echo "##vso[task.setvariable variable=staging_deploy;isOutput=true]False"
-    echo "##vso[task.setvariable variable=production_deploy;isOutput=true]False"
     echo "##vso[build.updatebuildnumber]$VERSION"
     
     echo "======================================="
     echo "              OUTPUT                   "
     echo "======================================="
     echo "Version: $VERSION"
-    echo "Staging deploy: FALSE"
-    echo "Production deploy: FALSE"
     echo "======================================="
     
     exit 0
@@ -123,16 +111,12 @@ then
     export VERSION="$VERSION_PREFIX-$VERSION_SUFFIX"
     
     echo "##vso[task.setvariable variable=version;isOutput=true]$VERSION"
-    echo "##vso[task.setvariable variable=staging_deploy;isOutput=true]True"
-    echo "##vso[task.setvariable variable=production_deploy;isOutput=true]False"
     echo "##vso[build.updatebuildnumber]$VERSION"
     
     echo "======================================="
     echo "              OUTPUT                   "
     echo "======================================="
     echo "Version: $VERSION"
-    echo "Staging deploy: TRUE"
-    echo "Production deploy: FALSE"
     echo "======================================="
     
     exit 0
@@ -142,23 +126,19 @@ echo "======================================="
 echo "              OTHERS                   "
 echo "======================================="
 
-VERSION_MAJOR=$((VERSION_MAJOR+1))
+VERSION_PATCH=$((VERSION_PATCH+1))
 
 export VERSION_PREFIX="$VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH"
-export VERSION_SUFFIX="alpha.${RELEASE}"
+export VERSION_SUFFIX="rc.${RELEASE}"
 export VERSION="$VERSION_PREFIX-$VERSION_SUFFIX"
 
 echo "##vso[task.setvariable variable=version;isOutput=true]$VERSION"
-echo "##vso[task.setvariable variable=staging_deploy;isOutput=true]False"
-echo "##vso[task.setvariable variable=production_deploy;isOutput=true]False"
 echo "##vso[build.updatebuildnumber]$VERSION"
 
 echo "======================================="
 echo "              OUTPUT                   "
 echo "======================================="
 echo "Version: $VERSION"
-echo "Staging deploy: FALSE"
-echo "Production deploy: FALSE"
 echo "======================================="
 
 exit 0
