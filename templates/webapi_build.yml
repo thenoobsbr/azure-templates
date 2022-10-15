@@ -36,7 +36,7 @@ parameters:
   default: true
 
 stages:
-- stage: project_build
+- stage: build
   displayName: 'Project Build'
   pool:
     name: ${{parameters.pool}}

@@ -20,23 +20,19 @@ parameters:
   type: object
   default:
   - net6.0
-- name: nuget_api_key
+- name: image_name
   type: string
-  default: $(NUGET_API_KEY)
-- name: nuget_source_url
-  type: string
-  default: https://api.nuget.org/v3/index.json
 
 stages:
-- stage: library_deploy
-  displayName: 'Library Deploy'
+- stage: image_deploy
+  displayName: 'Image Deploy'
   pool:
     name: ${{parameters.pool}}
   dependsOn: ${{parameters.depends_on}}
   condition: succeeded()
   jobs:
   - ${{ each environment in parameters.environments }}:
-    - deployment: library_deployment_${{environment}}
+    - deployment: image_deployment_${{environment}}
       environment: ${{environment}}
       workspace:
         clean: all
@@ -44,7 +40,16 @@ stages:
         runOnce:
           deploy:
             steps:
-            - bash: |
-                ls $(Pipeline.Workspace)/**/*$(Build.BuildNumber).nupkg | xargs -L3 dotnet nuget push -k ${{ parameters.nuget_api_key }} -s ${{ parameters.nuget_source_url }}
-              displayName: 'Push to Nuget'
-              name: nuget_push
+            - checkout: 'templates'
+              path: 'templates'
+
+            - task: Docker@2
+              inputs:
+                containerRegistry: 'digital_ocean'
+                repository: ${{ parameters.image_name }}
+                command: 'build'
+                Dockerfile: '$(Pipeline.Workspace)/templates/Dockerfiles/Dockerfile'
+                buildContext: $(Pipeline.Workspace)/${{parameters.artifact_name}}
+                tags: '$(Build.BuildNumber)'
+                addPipelineData: false
+                addBaseImageData: false
