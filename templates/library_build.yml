@@ -1,7 +1,7 @@
 parameters:
 - name: artifact_name
   type: string
-  default: 'library'
+  default: 'artifact'
 - name: projects
   type: string
   default: 'src/**/*.csproj'
