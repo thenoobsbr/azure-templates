@@ -25,4 +25,4 @@ RUN apt-get install -y tzdata
 #TIMEZONE INSTALL
 
 ENV ASPNETCORE_ENVIRONMENT=Production
-ENTRYPOINT ["dotnet", "$PROJECT_NAME.dll"]
+ENTRYPOINT ["dotnet", "$DLL_NAME.dll"]
