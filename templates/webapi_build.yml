@@ -28,13 +28,16 @@ parameters:
   type: object
   default:
   - net6.0
+- name: run_tests
+  type: boolean
+  default: true
 - name: run_sonar
   type: boolean
   default: true
 
 stages:
-- stage: library_build
-  displayName: 'Library Build'
+- stage: project_build
+  displayName: 'Project Build'
   pool:
     name: ${{parameters.pool}}
   dependsOn: ${{parameters.depends_on}}
@@ -78,36 +81,37 @@ stages:
         projects: '$(Pipeline.Workspace)/project/${{parameters.projects}}'
         arguments: '--no-restore --configuration Release'
 
-    - task: DotNetCoreCLI@2
-      displayName: Install ReportGenerator Global Tool
-      inputs:
-        command: custom
-        custom: tool
-        arguments: update dotnet-reportgenerator-globaltool --tool-path tools --ignore-failed-sources
+    - ${{ if eq(parameters.run_tests, true) }}:
+      - task: DotNetCoreCLI@2
+        displayName: Install ReportGenerator Global Tool
+        inputs:
+          command: custom
+          custom: tool
+          arguments: update dotnet-reportgenerator-globaltool --tool-path tools --ignore-failed-sources
 
-    - bash: |
-        ls $(Pipeline.Workspace)/project/test*/**/*.csproj | xargs -L1 dotnet test --collect:"XPlat Code Coverage" --settings $COVERLET_PATH --logger trx
-      displayName: Test
-      env:
-        COVERLET_PATH: '$(Pipeline.Workspace)/templates/coverlet/coverlet.runsettings'
+      - bash: |
+          ls $(Pipeline.Workspace)/project/test*/**/*.csproj | xargs -L1 dotnet test --collect:"XPlat Code Coverage" --settings $COVERLET_PATH --logger trx
+        displayName: Test
+        env:
+          COVERLET_PATH: '$(Pipeline.Workspace)/templates/coverlet/coverlet.runsettings'
 
-    - bash: |
-        ./tools/reportgenerator "-reports:$(Pipeline.Workspace)/project/test*/*/TestResults/*/coverage.cobertura.xml" "-targetdir:$(Pipeline.Workspace)/project/Reports_Coverage" -reportTypes:"Cobertura;SonarQube";
-      displayName: Generate code coverage report
+      - bash: |
+          ./tools/reportgenerator "-reports:$(Pipeline.Workspace)/project/test*/*/TestResults/*/coverage.cobertura.xml" "-targetdir:$(Pipeline.Workspace)/project/Reports_Coverage" -reportTypes:"Cobertura;SonarQube";
+        displayName: Generate code coverage report
 
-    - task: PublishTestResults@2
-      inputs:
-        testResultsFormat: 'VSTest'
-        testResultsFiles: '$(Pipeline.Workspace)/project/**/*.trx'
-        mergeTestResults: true
-      displayName: Publish test result
+      - task: PublishTestResults@2
+        inputs:
+          testResultsFormat: 'VSTest'
+          testResultsFiles: '$(Pipeline.Workspace)/project/**/*.trx'
+          mergeTestResults: true
+        displayName: Publish test result
 
-    - task: PublishCodeCoverageResults@1
-      inputs:
-        codeCoverageTool: 'Cobertura' 
-        summaryFileLocation: $(Pipeline.Workspace)/project/Reports_Coverage/Cobertura.xml
-        pathToSources: $(Pipeline.Workspace)/project/src/
-      displayName: Publish coverage
+      - task: PublishCodeCoverageResults@1
+        inputs:
+          codeCoverageTool: 'Cobertura' 
+          summaryFileLocation: $(Pipeline.Workspace)/project/Reports_Coverage/Cobertura.xml
+          pathToSources: $(Pipeline.Workspace)/project/src/
+        displayName: Publish coverage
     
     - ${{ if eq(parameters.run_sonar, true) }}:
       - task: SonarCloudAnalyze@1
