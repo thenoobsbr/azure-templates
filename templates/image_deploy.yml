@@ -22,6 +22,8 @@ parameters:
   - net6.0
 - name: image_name
   type: string
+- name: dll_name
+  type: string
 
 stages:
 - stage: image_deploy
@@ -36,6 +38,8 @@ stages:
       environment: ${{environment}}
       workspace:
         clean: all
+      variables:
+        dll_name: ${{ parameters.dll_name }}
       strategy:
         runOnce:
           deploy:
