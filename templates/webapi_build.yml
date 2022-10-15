@@ -50,7 +50,7 @@ stages:
     - checkout: 'templates'
       path: 'templates'
 
-    ${{ if eq(parameters.run_sonar, true) }}:
+    - ${{ if eq(parameters.run_sonar, true) }}:
       - task: SonarCloudPrepare@1  
         inputs:
           SonarCloud: 'SonarCloud'
@@ -109,7 +109,7 @@ stages:
         pathToSources: $(Pipeline.Workspace)/project/src/
       displayName: Publish coverage
     
-    ${{ if eq(parameters.run_sonar, true) }}:
+    - ${{ if eq(parameters.run_sonar, true) }}:
       - task: SonarCloudAnalyze@1
         displayName: 'Run Code Analysis'
 
