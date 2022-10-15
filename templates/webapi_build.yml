@@ -50,20 +50,20 @@ stages:
     - checkout: 'templates'
       path: 'templates'
 
-    - task: SonarCloudPrepare@1
-      condition: ${{ parameters.run_sonar }}
-      inputs:
-        SonarCloud: 'SonarCloud'
-        organization: ${{parameters.sonar_organization}}
-        scannerMode: 'MSBuild'
-        projectKey: ${{parameters.sonar_project_key}}
-        projectVersion: '${{parameters.version}}'
-        extraProperties: |
-          # Additional properties that will be passed to the scanner, 
-          # Put one key=value per line, example:
-          sonar.exclusions=**/*test*
-          sonar.exclusions=**/lib/**
-          sonar.coverageReportPaths=$(Pipeline.Workspace)/project/Reports_Coverage/SonarQube.xml
+    ${{ if parameters.run_sonar }}:
+      - task: SonarCloudPrepare@1  
+        inputs:
+          SonarCloud: 'SonarCloud'
+          organization: ${{parameters.sonar_organization}}
+          scannerMode: 'MSBuild'
+          projectKey: ${{parameters.sonar_project_key}}
+          projectVersion: '${{parameters.version}}'
+          extraProperties: |
+            # Additional properties that will be passed to the scanner, 
+            # Put one key=value per line, example:
+            sonar.exclusions=**/*test*
+            sonar.exclusions=**/lib/**
+            sonar.coverageReportPaths=$(Pipeline.Workspace)/project/Reports_Coverage/SonarQube.xml
 
     - task: DotNetCoreCLI@2
       displayName: 'Restore'
@@ -109,13 +109,13 @@ stages:
         pathToSources: $(Pipeline.Workspace)/project/src/
       displayName: Publish coverage
     
-    - task: SonarCloudAnalyze@1
-      condition: ${{ parameters.run_sonar }}
-      displayName: 'Run Code Analysis'
+    ${{ if parameters.run_sonar }}:
+      - task: SonarCloudAnalyze@1
+        displayName: 'Run Code Analysis'
 
-    - task: SonarCloudPublish@1
-      condition: ${{ parameters.run_sonar }}
-      displayName: 'Publish Quality Gate Result'
+      - task: SonarCloudPublish@1
+        condition: ${{ parameters.run_sonar }}
+        displayName: 'Publish Quality Gate Result'
   
     - ${{ each framework in parameters.target_frameworks }}:
       - task: DotNetCoreCLI@2
