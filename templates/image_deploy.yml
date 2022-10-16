@@ -74,6 +74,5 @@ stages:
                 Dockerfile: '$(Pipeline.Workspace)/templates/Dockerfiles/Dockerfile'
                 buildContext: $(Pipeline.Workspace)/${{parameters.artifact_name}}
                 tags: '$(Build.BuildNumber)'
-                arguments: --build-arg DLL_NAME=${{ parameters.dll_name }}
                 addPipelineData: false
                 addBaseImageData: false
