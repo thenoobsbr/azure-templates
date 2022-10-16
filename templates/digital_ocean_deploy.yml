@@ -20,7 +20,7 @@ parameters:
   default: '$(Pipeline.Workspace)/project/.devops/digitalocean_spec.yml'
 - name: digital_ocean_api_token
   type: string
-  default: $(DIGITALOCEAN_API_TOKEN)
+  default: $(DIGITAL_OCEAN_API_TOKEN)
 
 stages:
 - stage: digital_ocean_deploy
