@@ -1,0 +1,139 @@
+parameters:
+- name: artifact_name
+  type: string
+  default: 'artifact'
+- name: projects
+  type: string
+  default: 'src/**/*.csproj'
+- name: pool
+  type: string
+  default: 'Azure Pipelines'
+  values:
+  - 'Azure Pipelines'
+  - 'Self-hosted'
+- name: depends_on
+  type: object
+  default:
+  - calculate_sem_version
+- name: version
+  type: string
+  default: $(Build.BuildNumber)
+- name: sonar_organization
+  type: string
+  default: $(SONAR_ORGANIZATION)
+- name: sonar_project_key
+  type: string
+  default: $(SONAR_PROJECTKEY)
+- name: target_frameworks
+  type: object
+  default:
+  - net6.0
+- name: run_tests
+  type: boolean
+  default: true
+- name: run_sonar
+  type: boolean
+  default: true
+
+stages:
+- stage: build_package
+  displayName: 'Package Build'
+  pool:
+    name: ${{parameters.pool}}
+  dependsOn: ${{parameters.depends_on}}
+  jobs:
+  - job: build
+    displayName: 'Build package'
+    condition: succeeded()
+    variables:
+      version: ${{parameters.version}}
+    steps:
+    - checkout: self
+      path: 'project'
+
+    - checkout: 'templates'
+      path: 'templates'
+
+    - ${{ if eq(parameters.run_sonar, true) }}:
+      - task: SonarCloudPrepare@1
+        inputs:
+          SonarCloud: 'SonarCloud'
+          organization: ${{parameters.sonar_organization}}
+          scannerMode: 'MSBuild'
+          projectKey: ${{parameters.sonar_project_key}}
+          projectVersion: '${{parameters.version}}'
+          extraProperties: |
+            # Additional properties that will be passed to the scanner, 
+            # Put one key=value per line, example:
+            sonar.exclusions=**/*test*
+            sonar.exclusions=**/lib/**
+            sonar.coverageReportPaths=$(Pipeline.Workspace)/project/Reports_Coverage/SonarQube.xml
+
+    - task: DotNetCoreCLI@2
+      displayName: 'Restore'
+      inputs:
+        command: 'restore'
+        projects: '$(Pipeline.Workspace)/project/${{parameters.projects}}'
+
+    - task: DotNetCoreCLI@2
+      displayName: 'Build'
+      inputs:
+        command: 'build'
+        projects: '$(Pipeline.Workspace)/project/${{parameters.projects}}'
+        arguments: '--no-restore --configuration Release'
+
+    - ${{ if eq(parameters.run_tests, true) }}:
+      - task: DotNetCoreCLI@2
+        displayName: Install ReportGenerator Global Tool
+        inputs:
+          command: custom
+          custom: tool
+          arguments: update dotnet-reportgenerator-globaltool --tool-path tools --ignore-failed-sources
+
+      - bash: |
+          ls $(Pipeline.Workspace)/project/test*/**/*.csproj | xargs -L1 dotnet test --collect:"XPlat Code Coverage" --settings $COVERLET_PATH --logger trx
+        displayName: Test
+        env:
+          COVERLET_PATH: '$(Pipeline.Workspace)/templates/coverlet/coverlet.runsettings'
+
+      - bash: |
+          ./tools/reportgenerator "-reports:$(Pipeline.Workspace)/project/test*/*/TestResults/*/coverage.cobertura.xml" "-targetdir:$(Pipeline.Workspace)/project/Reports_Coverage" -reportTypes:"Cobertura;SonarQube";
+        displayName: Generate code coverage report
+
+      - task: PublishTestResults@2
+        inputs:
+          testResultsFormat: 'VSTest'
+          testResultsFiles: '$(Pipeline.Workspace)/project/**/*.trx'
+          mergeTestResults: true
+        displayName: Publish test result
+
+      - task: PublishCodeCoverageResults@1
+        inputs:
+          codeCoverageTool: 'Cobertura' 
+          summaryFileLocation: $(Pipeline.Workspace)/project/Reports_Coverage/Cobertura.xml
+          pathToSources: $(Pipeline.Workspace)/project/src/
+        displayName: Publish coverage
+    
+    - ${{ if eq(parameters.run_sonar, true) }}:
+      - task: SonarCloudAnalyze@1
+        displayName: 'Run Code Analysis'
+
+      - task: SonarCloudPublish@1
+        displayName: 'Publish Quality Gate Result'
+
+    - task: DotNetCoreCLI@2
+      displayName: Pack
+      inputs:
+        command: pack
+        packagesToPack: '$(Pipeline.Workspace)/project/${{parameters.projects}}'
+        configurationToPack: 'Release'
+        versioningScheme: byEnvVar
+        versionEnvVar: version
+        outputDir: '$(Build.ArtifactStagingDirectory)'
+        includesymbols: true
+
+    - task: PublishPipelineArtifact@1
+      displayName: Store Application Artifact
+      inputs:
+        targetPath: '$(System.ArtifactsDirectory)'
+        artifact: '${{parameters.artifact_name}}'

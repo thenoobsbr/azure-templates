@@ -1,0 +1,84 @@
+parameters:
+- name: artifact_name
+  type: string
+  default: 'artifact'
+- name: pool
+  type: string
+  default: 'Azure Pipelines'
+  values:
+  - 'Azure Pipelines'
+  - 'Self-hosted'
+- name: depends_on
+  type: object
+  default:
+  - build_app
+- name: environments
+  type: object
+  default: 
+  - Docker Registry
+- name: image_name
+  type: string
+- name: dll_name
+  type: string
+
+stages:
+- stage: image_publish
+  displayName: 'Image Publish'
+  pool:
+    name: ${{parameters.pool}}
+  dependsOn: ${{parameters.depends_on}}
+  condition: succeeded()
+  jobs:
+  - ${{ each environment in parameters.environments }}:
+    - deployment: image_publish
+      displayName: 'Publish to Registry'
+      environment: ${{environment}}
+      workspace:
+        clean: all
+      variables:
+        dll_name: ${{ parameters.dll_name }}
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            - checkout: 'templates'
+              path: 'templates'
+
+            - task: replacetokens@5
+              name: prepare_dockerfile
+              displayName: 'Prepare Dockerfile'
+              inputs:
+                rootDirectory: '$(Pipeline.Workspace)'
+                targetFiles: 'templates/Dockerfiles/Dockerfile'
+                encoding: 'auto'
+                tokenPattern: 'default'
+                writeBOM: true
+                actionOnMissing: 'warn'
+                keepToken: false
+                actionOnNoFiles: 'continue'
+                enableTransforms: false
+                enableRecursion: false
+                useLegacyPattern: false
+                enableTelemetry: true
+
+            - task: ExtractFiles@1
+              name: extract_artifact
+              displayName: 'Extract artifact'
+              inputs:
+                archiveFilePatterns: '$(Pipeline.Workspace)/${{parameters.artifact_name}}/**/*.zip'
+                destinationFolder: '$(Pipeline.Workspace)/${{parameters.artifact_name}}/deploy'
+                cleanDestinationFolder: true
+                overwriteExistingFiles: true
+
+            - task: Docker@2
+              name: build_and_push
+              displayName: 'Build and push'
+              inputs:
+                containerRegistry: 'digital_ocean'
+                repository: ${{ parameters.image_name }}
+                command: 'buildAndPush'
+                Dockerfile: '$(Pipeline.Workspace)/templates/Dockerfiles/Dockerfile'
+                buildContext: $(Pipeline.Workspace)/${{parameters.artifact_name}}/deploy
+                tags: '$(Build.BuildNumber)'
+                addPipelineData: false
+                addBaseImageData: false

@@ -1,7 +1,7 @@
 parameters:
 - name: artifact_name
   type: string
-  default: 'library'
+  default: 'artifact'
 - name: pool
   type: string
   default: 'Azure Pipelines'
@@ -11,7 +11,7 @@ parameters:
 - name: depends_on
   type: object
   default:
-  - library_build
+  - build_package
 - name: environments
   type: object
   default: 
@@ -28,15 +28,15 @@ parameters:
   default: https://api.nuget.org/v3/index.json
 
 stages:
-- stage: library_deploy
-  displayName: 'Library Deploy'
+- stage: package_publish
+  displayName: 'Publish package'
   pool:
     name: ${{parameters.pool}}
   dependsOn: ${{parameters.depends_on}}
   condition: succeeded()
   jobs:
   - ${{ each environment in parameters.environments }}:
-    - deployment: library_deployment_${{environment}}
+    - deployment: package_publish_${{environment}}
       environment: ${{environment}}
       workspace:
         clean: all
