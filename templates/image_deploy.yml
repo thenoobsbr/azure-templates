@@ -64,6 +64,9 @@ stages:
                 useLegacyPattern: false
                 enableTelemetry: true
 
+            - bash: |
+                ls $(Pipeline.Workspace)/${{parameters.artifact_name}}/net6.0
+
             - task: Docker@2
               name: build_and_push
               displayName: 'Build and push'
@@ -72,7 +75,7 @@ stages:
                 repository: ${{ parameters.image_name }}
                 command: 'buildAndPush'
                 Dockerfile: '$(Pipeline.Workspace)/templates/Dockerfiles/Dockerfile'
-                buildContext: $(Pipeline.Workspace)/${{parameters.artifact_name}}
+                buildContext: $(Pipeline.Workspace)/${{parameters.artifact_name}}/net6.0
                 tags: '$(Build.BuildNumber)'
                 addPipelineData: false
                 addBaseImageData: false
