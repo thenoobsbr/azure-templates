@@ -14,7 +14,7 @@ parameters:
 - name: depends_on
   type: object
   default:
-  - gitflow_calculate_version
+  - calculate_sem_version
 - name: version
   type: string
   default: $(Build.BuildNumber)
