@@ -15,11 +15,7 @@ parameters:
 - name: environments
   type: object
   default: 
-  - Production
-- name: target_frameworks
-  type: object
-  default:
-  - net6.0
+  - Docker Registry
 - name: image_name
   type: string
 - name: dll_name
@@ -34,7 +30,7 @@ stages:
   condition: succeeded()
   jobs:
   - ${{ each environment in parameters.environments }}:
-    - deployment: image_deployment_${{environment}}
+    - deployment: image_deployment
       environment: ${{environment}}
       workspace:
         clean: all
@@ -68,7 +64,7 @@ stages:
               name: extract_artifact
               displayName: Extract artifact
               inputs:
-                archiveFilePatterns: '$(Pipeline.Workspace)/${{parameters.artifact_name}}/net6.0/*.zip'
+                archiveFilePatterns: '$(Pipeline.Workspace)/${{parameters.artifact_name}}/**/*.zip'
                 destinationFolder: '$(Pipeline.Workspace)/${{parameters.artifact_name}}/deploy'
                 cleanDestinationFolder: true
                 overwriteExistingFiles: true

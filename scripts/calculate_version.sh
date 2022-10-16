@@ -126,19 +126,22 @@ echo "======================================="
 echo "              OTHERS                   "
 echo "======================================="
 
-VERSION_PATCH=$((VERSION_PATCH+1))
+echo "Deployment not supported. You should follow GitFlow pattern."
+exit 1
 
-export VERSION_PREFIX="$VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH"
-export VERSION_SUFFIX="rc.${RELEASE}"
-export VERSION="$VERSION_PREFIX-$VERSION_SUFFIX"
+# VERSION_PATCH=$((VERSION_PATCH+1))
 
-echo "##vso[task.setvariable variable=version;isOutput=true]$VERSION"
-echo "##vso[build.updatebuildnumber]$VERSION"
+# export VERSION_PREFIX="$VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH"
+# export VERSION_SUFFIX="rc.${RELEASE}"
+# export VERSION="$VERSION_PREFIX-$VERSION_SUFFIX"
 
-echo "======================================="
-echo "              OUTPUT                   "
-echo "======================================="
-echo "Version: $VERSION"
-echo "======================================="
+# echo "##vso[task.setvariable variable=version;isOutput=true]$VERSION"
+# echo "##vso[build.updatebuildnumber]$VERSION"
 
-exit 0
+# echo "======================================="
+# echo "              OUTPUT                   "
+# echo "======================================="
+# echo "Version: $VERSION"
+# echo "======================================="
+
+# exit 0

@@ -1,0 +1,71 @@
+parameters:
+- name: pool
+  type: string
+  default: 'Azure Pipelines'
+  values:
+  - 'Azure Pipelines'
+  - 'Self-hosted'
+- name: depends_on
+  type: object
+  default:
+  - build
+- name: environments
+  type: object
+  default: 
+  - Production
+- name: image_name
+  type: string
+- name: digital_ocean_file_spec_path
+  type: string
+  default: '$(Pipeline.Workspace)/project/.devops/digitalocean_spec.yml'
+- name: digital_ocean_api_token
+  type: string
+  default: $(DIGITALOCEAN_API_TOKEN)
+
+stages:
+- stage: digital_ocean_deploy
+  displayName: 'Digital Ocean Deploy'
+  variables:
+  - name: VERSION
+    value: $(Build.BuildNumber)
+  pool:
+    name: ${{parameters.pool}}
+  dependsOn: ${{parameters.depends_on}}
+  condition: succeeded()
+  jobs:
+  - ${{ each environment in parameters.environments }}:
+    - deployment: digital_ocean_deployment
+      environment: ${{environment}}
+      workspace:
+        clean: all
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            - checkout: 'self'
+              path: 'project'
+
+            - checkout: 'templates'
+              path: 'templates'
+
+            - task: DigitalOceanDoctlInstaller@2
+              name: deploy_install_doctl
+
+            - task: replacetokens@5
+              name: deploy_replace_tokens
+              inputs:
+                rootDirectory: '.'
+                targetFiles: ${{ parameters.digital_ocean_file_spec_path }}
+                encoding: 'auto'
+                tokenPattern: 'default'
+                writeBOM: true
+                actionOnMissing: fail
+                keepToken: false
+                actionOnNoFiles: fail
+                enableTransforms: false
+                useLegacyPattern: false
+                enableTelemetry: true
+                
+            - task: DigitalOceanDoctl@2
+              inputs:
+                arguments: 'apps create -t ${{ parameters.digital_ocean_api_token }} --spec ${{ parameters.digital_ocean_file_spec_path }} --upsert true'
