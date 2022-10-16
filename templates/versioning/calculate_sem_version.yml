@@ -7,13 +7,13 @@ parameters:
   - 'Self-hosted'
 
 stages:
-- stage: gitflow_calculate_version
-  displayName: 'Calculate Version'
+- stage: calculate_sem_version
+  displayName: 'Calculate Sem Version'
   pool:
     name: ${{parameters.pool}}
   jobs:
   - job: calculate_version
-    displayName: 'Calculate Version'
+    displayName: 'Calculate'
     variables:
       release: $[counter(variables['Build.SourceBranchName'], 1)]
     steps:    
