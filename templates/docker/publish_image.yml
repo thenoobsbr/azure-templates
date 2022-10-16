@@ -11,7 +11,7 @@ parameters:
 - name: depends_on
   type: object
   default:
-  - build
+  - build_app
 - name: environments
   type: object
   default: 

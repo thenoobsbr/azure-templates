@@ -36,13 +36,13 @@ parameters:
   default: true
 
 stages:
-- stage: build
-  displayName: 'Project Build'
+- stage: build_app
+  displayName: 'App Build'
   pool:
     name: ${{parameters.pool}}
   dependsOn: ${{parameters.depends_on}}
   jobs:
-  - job: Build
+  - job: build
     condition: succeeded()
     variables:
       version: ${{parameters.version}}
