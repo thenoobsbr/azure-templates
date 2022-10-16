@@ -49,7 +49,7 @@ stages:
 
             - task: replacetokens@5
               name: prepare_dockerfile
-              value: 'Prepare Dockerfile'
+              displayName: 'Prepare Dockerfile'
               inputs:
                 rootDirectory: '$(Pipeline.Workspace)'
                 targetFiles: 'templates/Dockerfiles/Dockerfile'
