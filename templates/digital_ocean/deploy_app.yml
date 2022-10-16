@@ -51,7 +51,7 @@ stages:
 
             - task: DigitalOceanDoctlInstaller@2
               name: deploy_install_doctl
-              displayName: 'Install Doct'
+              displayName: 'Install Doctl'
 
             - task: replacetokens@5
               name: deploy_replace_tokens
