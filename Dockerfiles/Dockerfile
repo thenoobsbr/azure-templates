@@ -1,4 +1,3 @@
-ARG DLL_NAME
 FROM mcr.microsoft.com/dotnet/aspnet:6.0
 WORKDIR /app
 COPY . .
@@ -26,4 +25,4 @@ RUN apt-get install -y tzdata
 #TIMEZONE INSTALL
 
 ENV ASPNETCORE_ENVIRONMENT=Production
-ENTRYPOINT ["dotnet", "$DLL_NAME.dll"]
+ENTRYPOINT ["dotnet", "#{DLL_NAME}#"]

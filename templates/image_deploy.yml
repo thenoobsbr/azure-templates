@@ -47,6 +47,23 @@ stages:
             - checkout: 'templates'
               path: 'templates'
 
+            - task: replacetokens@5
+              name: prepare_dockerfile
+              value: 'Prepare Dockerfile'
+              inputs:
+                rootDirectory: '$(Pipeline.Workspace)'
+                targetFiles: 'templates/Dockerfiles/Dockerfile'
+                encoding: 'auto'
+                tokenPattern: 'default'
+                writeBOM: true
+                actionOnMissing: 'warn'
+                keepToken: false
+                actionOnNoFiles: 'continue'
+                enableTransforms: false
+                enableRecursion: false
+                useLegacyPattern: false
+                enableTelemetry: true
+
             - task: Docker@2
               inputs:
                 containerRegistry: 'digital_ocean'
