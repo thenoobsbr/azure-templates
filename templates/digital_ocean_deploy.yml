@@ -35,6 +35,7 @@ stages:
   jobs:
   - ${{ each environment in parameters.environments }}:
     - deployment: digital_ocean_deployment
+      displayName: Deploy to DigitalOcean
       environment: ${{environment}}
       workspace:
         clean: all

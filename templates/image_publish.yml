@@ -22,15 +22,16 @@ parameters:
   type: string
 
 stages:
-- stage: image_deploy
-  displayName: 'Image Deploy'
+- stage: image_publish
+  displayName: 'Image Publish'
   pool:
     name: ${{parameters.pool}}
   dependsOn: ${{parameters.depends_on}}
   condition: succeeded()
   jobs:
   - ${{ each environment in parameters.environments }}:
-    - deployment: image_deployment
+    - deployment: image_publish
+      displayName: 'Publish to Registry'
       environment: ${{environment}}
       workspace:
         clean: all
