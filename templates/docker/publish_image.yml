@@ -20,6 +20,12 @@ parameters:
   type: string
 - name: dll_name
   type: string
+- name: target_framework
+  type: string
+  default: net6.0
+  values:
+  - net5.0
+  - net6.0
 
 stages:
 - stage: image_publish
@@ -49,7 +55,7 @@ stages:
               displayName: 'Prepare Dockerfile'
               inputs:
                 rootDirectory: '$(Pipeline.Workspace)'
-                targetFiles: 'templates/Dockerfiles/Dockerfile'
+                targetFiles: 'templates/Dockerfiles/Dockerfile_${{ parameters.target_framework }}'
                 encoding: 'auto'
                 tokenPattern: 'default'
                 writeBOM: true
@@ -77,7 +83,7 @@ stages:
                 containerRegistry: 'digital_ocean'
                 repository: ${{ parameters.image_name }}
                 command: 'buildAndPush'
-                Dockerfile: '$(Pipeline.Workspace)/templates/Dockerfiles/Dockerfile'
+                Dockerfile: '$(Pipeline.Workspace)/templates/Dockerfiles/Dockerfile_${{ parameters.target_framework }}'
                 buildContext: $(Pipeline.Workspace)/${{parameters.artifact_name}}/deploy
                 tags: '$(Build.BuildNumber)'
                 addPipelineData: false
