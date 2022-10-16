@@ -16,10 +16,6 @@ parameters:
   type: object
   default: 
   - Production
-- name: target_frameworks
-  type: object
-  default:
-  - net6.0
 - name: nuget_api_key
   type: string
   default: $(NUGET_API_KEY)

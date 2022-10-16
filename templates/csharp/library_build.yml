@@ -24,10 +24,6 @@ parameters:
 - name: sonar_project_key
   type: string
   default: $(SONAR_PROJECTKEY)
-- name: target_frameworks
-  type: object
-  default:
-  - net6.0
 - name: run_tests
   type: boolean
   default: true

@@ -24,9 +24,11 @@ parameters:
 - name: sonar_project_key
   type: string
   default: $(SONAR_PROJECTKEY)
-- name: target_frameworks
-  type: object
-  default:
+- name: target_framework
+  type: string
+  default: net6.0
+  values:
+  - net5.0
   - net6.0
 - name: run_tests
   type: boolean
@@ -122,19 +124,19 @@ stages:
         condition: ${{ parameters.run_sonar }}
         displayName: 'Publish Quality Gate Result'
   
-    - ${{ each framework in parameters.target_frameworks }}:
-      - task: DotNetCoreCLI@2
-        displayName: Publish for ${{framework}}
-        inputs:
-          command: 'publish'
-          publishWebProjects: false
-          projects: '$(Pipeline.Workspace)/project/${{parameters.projects}}'
-          arguments: '-c Release -o $(Build.ArtifactStagingDirectory)/${{ framework }} -f ${{ framework }}'
-          zipAfterPublish: true
-          modifyOutputPath: true
-          configuration: 'Release'
-          versioningScheme: byEnvVar
-          versionEnvVar: version
+    
+    - task: DotNetCoreCLI@2
+      displayName: Publish for ${{ parameters.target_framework }}
+      inputs:
+        command: 'publish'
+        publishWebProjects: false
+        projects: '$(Pipeline.Workspace)/project/${{parameters.projects}}'
+        arguments: '-c Release -o $(Build.ArtifactStagingDirectory)/${{ parameters.target_framework }} -f ${{ parameters.target_framework }}'
+        zipAfterPublish: true
+        modifyOutputPath: true
+        configuration: 'Release'
+        versioningScheme: byEnvVar
+        versionEnvVar: version
 
     - task: PublishPipelineArtifact@1
       displayName: Store Application Artifact
