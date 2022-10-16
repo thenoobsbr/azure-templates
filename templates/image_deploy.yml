@@ -65,10 +65,12 @@ stages:
                 enableTelemetry: true
 
             - task: Docker@2
+              name: build_and_push
+              displayName: 'Build and push'
               inputs:
                 containerRegistry: 'digital_ocean'
                 repository: ${{ parameters.image_name }}
-                command: 'build'
+                command: 'buildAndPush'
                 Dockerfile: '$(Pipeline.Workspace)/templates/Dockerfiles/Dockerfile'
                 buildContext: $(Pipeline.Workspace)/${{parameters.artifact_name}}
                 tags: '$(Build.BuildNumber)'
