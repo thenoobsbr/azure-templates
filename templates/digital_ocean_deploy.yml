@@ -8,7 +8,7 @@ parameters:
 - name: depends_on
   type: object
   default:
-  - build
+  - image_deploy
 - name: environments
   type: object
   default: 
@@ -65,7 +65,7 @@ stages:
                 enableTransforms: false
                 useLegacyPattern: false
                 enableTelemetry: true
-                
+
             - task: DigitalOceanDoctl@2
               inputs:
                 arguments: 'apps create -t ${{ parameters.digital_ocean_api_token }} --spec ${{ parameters.digital_ocean_file_spec_path }} --upsert true'
