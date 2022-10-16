@@ -64,8 +64,14 @@ stages:
                 useLegacyPattern: false
                 enableTelemetry: true
 
-            - bash: |
-                ls $(Pipeline.Workspace)/${{parameters.artifact_name}}/net6.0
+            - task: ExtractFiles@1
+              name: extract_artifact
+              displayName: Extract artifact
+              inputs:
+                archiveFilePatterns: '$(Pipeline.Workspace)/${{parameters.artifact_name}}/net6.0/*.zip'
+                destinationFolder: '$(Pipeline.Workspace)/${{parameters.artifact_name}}/deploy'
+                cleanDestinationFolder: true
+                overwriteExistingFiles: true
 
             - task: Docker@2
               name: build_and_push
@@ -75,7 +81,7 @@ stages:
                 repository: ${{ parameters.image_name }}
                 command: 'buildAndPush'
                 Dockerfile: '$(Pipeline.Workspace)/templates/Dockerfiles/Dockerfile'
-                buildContext: $(Pipeline.Workspace)/${{parameters.artifact_name}}/net6.0
+                buildContext: $(Pipeline.Workspace)/${{parameters.artifact_name}}/deploy
                 tags: '$(Build.BuildNumber)'
                 addPipelineData: false
                 addBaseImageData: false
