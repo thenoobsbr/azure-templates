@@ -63,7 +63,7 @@ stages:
 
             - task: ExtractFiles@1
               name: extract_artifact
-              displayName: Extract artifact
+              displayName: 'Extract artifact'
               inputs:
                 archiveFilePatterns: '$(Pipeline.Workspace)/${{parameters.artifact_name}}/**/*.zip'
                 destinationFolder: '$(Pipeline.Workspace)/${{parameters.artifact_name}}/deploy'

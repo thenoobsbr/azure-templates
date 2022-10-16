@@ -24,7 +24,7 @@ parameters:
 
 stages:
 - stage: digital_ocean_deploy
-  displayName: 'Digital Ocean Deploy'
+  displayName: 'Digital Ocean App Deploy'
   variables:
   - name: VERSION
     value: $(Build.BuildNumber)
@@ -35,7 +35,7 @@ stages:
   jobs:
   - ${{ each environment in parameters.environments }}:
     - deployment: digital_ocean_deployment
-      displayName: Deploy to DigitalOcean
+      displayName: 'Deploy to DigitalOcean'
       environment: ${{environment}}
       workspace:
         clean: all
@@ -51,9 +51,11 @@ stages:
 
             - task: DigitalOceanDoctlInstaller@2
               name: deploy_install_doctl
+              displayName: 'Install Doct'
 
             - task: replacetokens@5
               name: deploy_replace_tokens
+              displayName: 'Prepare Spec file'
               inputs:
                 rootDirectory: '.'
                 targetFiles: ${{ parameters.digital_ocean_file_spec_path }}
@@ -68,5 +70,6 @@ stages:
                 enableTelemetry: true
 
             - task: DigitalOceanDoctl@2
+              displayName: 'Publish app'
               inputs:
                 arguments: 'apps create -t ${{ parameters.digital_ocean_api_token }} --spec ${{ parameters.digital_ocean_file_spec_path }} --upsert true'

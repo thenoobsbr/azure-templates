@@ -43,6 +43,7 @@ stages:
   dependsOn: ${{parameters.depends_on}}
   jobs:
   - job: build
+    displayName: 'Build package'
     condition: succeeded()
     variables:
       version: ${{parameters.version}}
