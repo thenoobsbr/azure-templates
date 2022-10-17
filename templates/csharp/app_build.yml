@@ -76,11 +76,12 @@ stages:
 
     - ${{ if eq(parameters.install_new_relic, true) }}:
       - task: DotNetCoreCLI@2
+        displayName: 'Add NewRelic'
         inputs:
           command: 'custom'
           projects: '$(Pipeline.Workspace)/project/${{parameters.projects}}'
-          custom: 'add package'
-          arguments: 'NewRelic.Agent'
+          custom: 'add'
+          arguments: 'package NewRelic.Agent'
 
     - task: DotNetCoreCLI@2
       displayName: 'Restore'
