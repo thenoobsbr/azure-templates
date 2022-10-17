@@ -36,6 +36,9 @@ parameters:
 - name: run_sonar
   type: boolean
   default: true
+- name: install_new_relic
+  type: boolean
+  default: true
 
 stages:
 - stage: build_app
@@ -70,6 +73,14 @@ stages:
             sonar.exclusions=**/*test*
             sonar.exclusions=**/lib/**
             sonar.coverageReportPaths=$(Pipeline.Workspace)/project/Reports_Coverage/SonarQube.xml
+
+    - ${{ if eq(parameters.install_new_relic, true) }}:
+      - task: DotNetCoreCLI@2
+        inputs:
+          command: 'custom'
+          projects: '$(Pipeline.Workspace)/project/${{parameters.projects}}'
+          custom: 'add package'
+          arguments: 'NewRelic.Agent'
 
     - task: DotNetCoreCLI@2
       displayName: 'Restore'
