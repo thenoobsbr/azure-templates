@@ -3,7 +3,7 @@ WORKDIR /app
 
 COPY . .
 
-RUN apk add --no-cache tzdata libicu
+RUN apk add --no-cache tzdata icu
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=0
 
 ENV CORECLR_ENABLE_PROFILING=1
