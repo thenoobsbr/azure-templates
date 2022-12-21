@@ -84,7 +84,7 @@ stages:
                 repository: ${{ parameters.image_name }}
                 command: 'buildAndPush'
                 Dockerfile: '$(Pipeline.Workspace)/templates/Dockerfiles/Dockerfile_${{ parameters.target_framework }}'
-                buildContext: $(Pipeline.Workspace)/${{parameters.artifact_name}}/deploy
+                buildContext: $(Pipeline.Workspace)/${{parameters.artifact_name}}/deploy/${{parameters.target_framework}}
                 tags: '$(Build.BuildNumber)'
                 addPipelineData: false
                 addBaseImageData: false
