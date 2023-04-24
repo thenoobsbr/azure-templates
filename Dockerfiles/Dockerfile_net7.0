@@ -1,0 +1,16 @@
+FROM mcr.microsoft.com/dotnet/aspnet:7.0-alpine
+WORKDIR /app
+
+COPY . .
+
+RUN apk add --no-cache icu-libs
+RUN apk add --no-cache icu-data-full
+RUN apk add --no-cache tzdata
+ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=0
+
+ENV CORECLR_ENABLE_PROFILING=1
+ENV CORECLR_PROFILER={36032161-FFC0-4B61-B559-F6C5D41BAE5A}
+ENV CORECLR_PROFILER_PATH=/app/newrelic/libNewRelicProfiler.so
+ENV CORECLR_NEWRELIC_HOME=/app/newrelic
+ENV ASPNETCORE_ENVIRONMENT=Production
+ENTRYPOINT ["dotnet", "#{DLL_NAME}#"]
