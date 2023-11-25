@@ -92,7 +92,7 @@ stages:
         name: coverage_install
 
       - bash: |
-           SOLUTION=$(ls *.sln | xargs -L1)
+          SOLUTION=$(ls *.sln | xargs -L1)
           ./tools/dotnet-coverage collect "dotnet test "$SOLUTION" -f xml -o "coverage.xml"
         displayName: Run tests with coverage
         name: coverage_run
