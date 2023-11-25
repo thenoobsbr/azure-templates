@@ -24,6 +24,12 @@ parameters:
 - name: sonar_project_key
   type: string
   default: $(SONAR_PROJECTKEY)
+- name: sonar_token
+  type: string
+  default: $(SONAR_TOKEN)
+- name: sonar_url
+  type: string
+  default: https://sonarcloud.io
 - name: run_tests
   type: boolean
   default: true
@@ -51,20 +57,22 @@ stages:
       path: 'templates'
 
     - ${{ if eq(parameters.run_sonar, true) }}:
-      - task: SonarCloudPrepare@1
-        inputs:
-          SonarCloud: 'SonarCloud'
-          organization: ${{parameters.sonar_organization}}
-          scannerMode: 'MSBuild'
-          projectKey: ${{parameters.sonar_project_key}}
-          projectVersion: '${{parameters.version}}'
-          extraProperties: |
-            # Additional properties that will be passed to the scanner, 
-            # Put one key=value per line, example:
-            sonar.exclusions=**/*test*
-            sonar.exclusions=**/lib/**
-            sonar.coverageReportPaths=$(Pipeline.Workspace)/project/Reports_Coverage/SonarQube.xml
-            sonar.cs.vscoveragexml.reportsPaths=$(Pipeline.Workspace)/project/Reports_Coverage/SonarQube.xml
+      - bash: |
+          dotnet tool update dotnet-sonarscannel --tool-path tools --ignore-failed-sources
+        displayName: Install Sonar Scanner
+        name: sonar_install
+        
+      - bash: |
+          ./tools/dotnet-sonarscanner begin\
+            /k:${{parameters.sonar_project_key}}\
+            /o:${{parameters.sonar_organization}}\
+            /v:$VERSION
+            /d:sonar.token=${{parameters.sonar_token}}\
+            /d:sonar.host.url=${{parameters.sonar_url}}\
+            /d:sonar.dotnet.excludeTestProjects=true\
+            /d:sonar.cs.vscoveragexml.reportsPaths=coverage.xml
+        displayName: Begin Sonar Scanner
+        name: sonar_begin
 
     - task: DotNetCoreCLI@2
       displayName: 'Restore'
@@ -80,43 +88,28 @@ stages:
         arguments: '--no-restore --configuration Release'
 
     - ${{ if eq(parameters.run_tests, true) }}:
-      - task: DotNetCoreCLI@2
-        displayName: Install ReportGenerator Global Tool
-        inputs:
-          command: custom
-          custom: tool
-          arguments: update dotnet-reportgenerator-globaltool --tool-path tools --ignore-failed-sources
+      - bash: |
+          dotnet tool update dotnet-coverage --tool-path tools --ignore-failed-sources
+        displayName: Install Coverage
+        name: coverage_install
 
       - bash: |
-          ls $(Pipeline.Workspace)/project/test*/**/*.csproj | xargs -L1 dotnet test --collect:"XPlat Code Coverage" --settings $COVERLET_PATH --logger trx
-        displayName: Test
-        env:
-          COVERLET_PATH: '$(Pipeline.Workspace)/templates/coverlet/coverlet.runsettings'
-
-      - bash: |
-          ./tools/reportgenerator "-reports:$(Pipeline.Workspace)/project/test*/*/TestResults/*/coverage.cobertura.xml" "-targetdir:$(Pipeline.Workspace)/project/Reports_Coverage" -reportTypes:"Cobertura;SonarQube";
-        displayName: Generate code coverage report
-
-      - task: PublishTestResults@2
-        inputs:
-          testResultsFormat: 'VSTest'
-          testResultsFiles: '$(Pipeline.Workspace)/project/**/*.trx'
-          mergeTestResults: true
-        displayName: Publish test result
+          ./tools/dotnet-coverage collect "dotnet test" -f xml -o "coverage.xml"
+        displayName: Run tests with coverage
+        name: coverage_run
 
       - task: PublishCodeCoverageResults@1
         inputs:
           codeCoverageTool: 'Cobertura' 
-          summaryFileLocation: $(Pipeline.Workspace)/project/Reports_Coverage/Cobertura.xml
+          summaryFileLocation: $(Pipeline.Workspace)/project/coverage.xml
           pathToSources: $(Pipeline.Workspace)/project/src/
         displayName: Publish coverage
     
     - ${{ if eq(parameters.run_sonar, true) }}:
-      - task: SonarCloudAnalyze@1
-        displayName: 'Run Code Analysis'
-
-      - task: SonarCloudPublish@1
-        displayName: 'Publish Quality Gate Result'
+      - bash: |
+          ./tools/dotnet-sonarscanner end /d:sonar.token=${{parameters.sonar_token}}
+        displayName: End Sonar Scanner
+        name: sonar_end
 
     - task: DotNetCoreCLI@2
       displayName: Pack
