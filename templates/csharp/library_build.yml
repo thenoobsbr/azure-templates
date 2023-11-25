@@ -63,14 +63,7 @@ stages:
         name: sonar_install
 
       - bash: |
-          ./tools/dotnet-sonarscanner begin\
-            /k:$SONAR_PROJECT_KEY\
-            /o:$SONAR_PROJECT_ORGANIZATION\
-            /v:$VERSION
-            /d:sonar.token=$SONAR_TOKEN\
-            /d:sonar.host.url=$SONAR_URL\
-            /d:sonar.dotnet.excludeTestProjects=true\
-            /d:sonar.cs.vscoveragexml.reportsPaths=coverage.xml
+          ./tools/dotnet-sonarscanner begin /k:$SONAR_PROJECT_KEY /o:$SONAR_PROJECT_ORGANIZATION /v:$VERSION /d:sonar.token=$SONAR_TOKEN /d:sonar.host.url=$SONAR_URL /d:sonar.dotnet.excludeTestProjects=true /d:sonar.cs.vscoveragexml.reportsPaths=coverage.xml
         displayName: Begin Sonar Scanner
         name: sonar_begin
         env:
