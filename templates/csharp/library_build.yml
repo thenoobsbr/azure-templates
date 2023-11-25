@@ -73,7 +73,7 @@ stages:
           targetType: 'inline'
           workingDirectory: '$(Pipeline.Workspace)/project'
           script: |
-            ./tools/dotnet-sonarscanner begin /k:$SONAR_PROJECT_KEY /o:$SONAR_PROJECT_ORGANIZATION /v:$VERSION /d:sonar.token=$SONAR_TOKEN /d:sonar.host.url=$SONAR_URL /d:sonar.dotnet.excludeTestProjects=true /d:sonar.cs.vscoveragexml.reportsPaths=coverage.xml
+            ./tools/dotnet-sonarscanner begin /k:$SONAR_PROJECT_KEY /o:$SONAR_PROJECT_ORGANIZATION /v:$VERSION /d:sonar.token=$SONAR_TOKEN /d:sonar.host.url=$SONAR_URL /d:sonar.dotnet.excludeTestProjects=true /d:sonar.cs.vscoveragexml.reportsPaths=$(Pipeline.Workspace)/project/coverage.xml
         env:
           SONAR_PROJECT_KEY: ${{parameters.sonar_project_key}}
           SONAR_PROJECT_ORGANIZATION: ${{parameters.sonar_organization}}
@@ -110,8 +110,7 @@ stages:
           targetType: 'inline'
           workingDirectory: '$(Pipeline.Workspace)/project'
           script: |
-            SOLUTION=$(ls *.sln | xargs -L1)
-            ./tools/dotnet-coverage collect "dotnet test $SOLUTION" -f xml -o "coverage.xml"
+            ./tools/dotnet-coverage collect "dotnet test" -f xml -o "$(Pipeline.Workspace)/project/coverage.xml"
 
       - task: PublishCodeCoverageResults@1
         inputs:
