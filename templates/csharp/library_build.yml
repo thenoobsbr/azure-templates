@@ -57,15 +57,23 @@ stages:
       path: 'templates'
 
     - ${{ if eq(parameters.run_sonar, true) }}:
-      - bash: |
-          dotnet tool update dotnet-sonarscanner --tool-path tools --ignore-failed-sources
+      - task: Bash@3
         displayName: Install Sonar Scanner
         name: sonar_install
+        inputs:
+          targetType: 'inline'
+          cwd: 'cd $(Pipeline.Workspace)/project'
+          script: |
+            dotnet tool update dotnet-sonarscanner --tool-path tools --ignore-failed-sources
 
-      - bash: |
-          ./tools/dotnet-sonarscanner begin /k:$SONAR_PROJECT_KEY /o:$SONAR_PROJECT_ORGANIZATION /v:$VERSION /d:sonar.token=$SONAR_TOKEN /d:sonar.host.url=$SONAR_URL /d:sonar.dotnet.excludeTestProjects=true /d:sonar.cs.vscoveragexml.reportsPaths=coverage.xml
+      - task: Bash@3
         displayName: Begin Sonar Scanner
         name: sonar_begin
+        inputs:
+          targetType: 'inline'
+          cwd: 'cd $(Pipeline.Workspace)/project'
+          script: |
+            ./tools/dotnet-sonarscanner begin /k:$SONAR_PROJECT_KEY /o:$SONAR_PROJECT_ORGANIZATION /v:$VERSION /d:sonar.token=$SONAR_TOKEN /d:sonar.host.url=$SONAR_URL /d:sonar.dotnet.excludeTestProjects=true /d:sonar.cs.vscoveragexml.reportsPaths=coverage.xml
         env:
           SONAR_PROJECT_KEY: ${{parameters.sonar_project_key}}
           SONAR_PROJECT_ORGANIZATION: ${{parameters.sonar_organization}}
@@ -86,16 +94,24 @@ stages:
         arguments: '--no-restore --configuration Release'
 
     - ${{ if eq(parameters.run_tests, true) }}:
-      - bash: |
-          dotnet tool update dotnet-coverage --tool-path tools --ignore-failed-sources
+      - task: Bash@3
         displayName: Install Coverage
         name: coverage_install
+        inputs:
+          targetType: 'inline'
+          cwd: 'cd $(Pipeline.Workspace)/project'
+          script: |
+            dotnet tool update dotnet-coverage --tool-path tools --ignore-failed-sources
 
-      - bash: |
-          SOLUTION=$(ls *.sln | xargs -L1)
-          ./tools/dotnet-coverage collect "dotnet test $SOLUTION" -f xml -o "coverage.xml"
+      - task: Bash@3
         displayName: Run tests with coverage
         name: coverage_run
+        inputs:
+          targetType: 'inline'
+          cwd: 'cd $(Pipeline.Workspace)/project'
+          script: |
+            SOLUTION=$(ls *.sln | xargs -L1)
+            ./tools/dotnet-coverage collect "dotnet test $SOLUTION" -f xml -o "coverage.xml"
 
       - task: PublishCodeCoverageResults@1
         inputs:
@@ -105,10 +121,14 @@ stages:
         displayName: Publish coverage
     
     - ${{ if eq(parameters.run_sonar, true) }}:
-      - bash: |
-          ./tools/dotnet-sonarscanner end /d:sonar.token=$SONAR_TOKEN
+      - task: Bash@3
         displayName: End Sonar Scanner
         name: sonar_end
+        inputs:
+          targetType: 'inline'
+          cwd: 'cd $(Pipeline.Workspace)/project'
+          script: |
+            ./tools/dotnet-sonarscanner end /d:sonar.token=$SONAR_TOKEN
         env:
           SONAR_TOKEN: ${{parameters.sonar_token}}
 
