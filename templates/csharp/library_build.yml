@@ -64,15 +64,20 @@ stages:
 
       - bash: |
           ./tools/dotnet-sonarscanner begin\
-            /k:${{parameters.sonar_project_key}}\
-            /o:${{parameters.sonar_organization}}\
+            /k:$SONAR_PROJECT_KEY\
+            /o:$SONAR_PROJECT_ORGANIZATION\
             /v:$VERSION
-            /d:sonar.token=${{parameters.sonar_token}}\
-            /d:sonar.host.url=${{parameters.sonar_url}}\
+            /d:sonar.token=$SONAR_TOKEN\
+            /d:sonar.host.url=$SONAR_URL\
             /d:sonar.dotnet.excludeTestProjects=true\
             /d:sonar.cs.vscoveragexml.reportsPaths=coverage.xml
         displayName: Begin Sonar Scanner
         name: sonar_begin
+        env:
+          SONAR_PROJECT_KEY: ${{parameters.sonar_project_key}}
+          SONAR_PROJECT_ORGANIZATION: ${{parameters.sonar_organization}}
+          SONAR_TOKEN: ${{parameters.sonar_token}}
+          SONAR_URL: ${{parameters.sonar_url}}
 
     - task: DotNetCoreCLI@2
       displayName: 'Restore'
@@ -107,9 +112,11 @@ stages:
     
     - ${{ if eq(parameters.run_sonar, true) }}:
       - bash: |
-          ./tools/dotnet-sonarscanner end /d:sonar.token=${{parameters.sonar_token}}
+          ./tools/dotnet-sonarscanner end /d:sonar.token=$SONAR_TOKEN
         displayName: End Sonar Scanner
         name: sonar_end
+        env:
+          SONAR_TOKEN: ${{parameters.sonar_token}}
 
     - task: DotNetCoreCLI@2
       displayName: Pack
