@@ -29,7 +29,7 @@ stages:
   - name: VERSION
     value: $(Build.BuildNumber)
   - name: DIGITAL_OCEAN_SPEC_FILE
-    value: $[combine('$(Pipeline.Workspace)/project/', '${{ parameters.digital_ocean_file_spec_path }}')]
+    value: '$(Pipeline.Workspace)/project/${{ parameters.digital_ocean_file_spec_path }}'
   pool:
     name: ${{parameters.pool}}
   dependsOn: ${{parameters.depends_on}}
