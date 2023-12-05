@@ -17,7 +17,7 @@ parameters:
   type: string
 - name: digital_ocean_file_spec_path
   type: string
-  default: '$(Pipeline.Workspace)/project/.devops/digitalocean_spec.yml'
+  default: '.devops/digitalocean_spec.yml'
 - name: digital_ocean_api_token
   type: string
   default: $(DIGITAL_OCEAN_API_TOKEN)
@@ -28,6 +28,8 @@ stages:
   variables:
   - name: VERSION
     value: $(Build.BuildNumber)
+  - name: DIGITAL_OCEAN_SPEC_FILE
+    value: '$(Pipeline.Workspace)/project/${{ parameters.digital_ocean_file_spec_path }}'
   pool:
     name: ${{parameters.pool}}
   dependsOn: ${{parameters.depends_on}}
@@ -58,7 +60,7 @@ stages:
               displayName: 'Prepare Spec file'
               inputs:
                 rootDirectory: '.'
-                targetFiles: ${{ parameters.digital_ocean_file_spec_path }}
+                targetFiles: ${{ variables.DIGITAL_OCEAN_SPEC_FILE }}
                 encoding: 'auto'
                 tokenPattern: 'default'
                 writeBOM: true
@@ -72,4 +74,4 @@ stages:
             - task: DigitalOceanDoctl@2
               displayName: 'Publish app'
               inputs:
-                arguments: 'apps create -t ${{ parameters.digital_ocean_api_token }} --spec ${{ parameters.digital_ocean_file_spec_path }} --upsert true'
+                arguments: 'apps create -t ${{ parameters.digital_ocean_api_token }} --spec ${{ variables.DIGITAL_OCEAN_SPEC_FILE }} --upsert true'
