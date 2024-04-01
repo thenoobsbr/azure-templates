@@ -127,7 +127,7 @@ stages:
           targetType: 'inline'
           workingDirectory: '$(Pipeline.Workspace)/project'
           script: |
-            ./tools/dotnet-sonarscanner end /d:sonar.token=$SONAR_TOKEN /d:sonar.java.binaries=**/*.java
+            ./tools/dotnet-sonarscanner end /d:sonar.token=$SONAR_TOKEN
         env:
           SONAR_TOKEN: ${{parameters.sonar_token}}
 
