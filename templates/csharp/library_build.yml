@@ -64,7 +64,7 @@ stages:
           targetType: 'inline'
           workingDirectory: '$(Pipeline.Workspace)/project'
           script: |
-            dotnet tool update dotnet-sonarscanner --tool-path tools --ignore-failed-sources --version 4.8.1
+            dotnet tool update dotnet-sonarscanner --tool-path tools --ignore-failed-sources --version 6.2.0
 
       - task: Bash@3
         displayName: Begin Sonar Scanner
