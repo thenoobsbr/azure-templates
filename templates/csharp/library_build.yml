@@ -64,7 +64,7 @@ stages:
           targetType: 'inline'
           workingDirectory: '$(Pipeline.Workspace)/project'
           script: |
-            sudo apt install default-jre -y
+            sudo apt install openjdk-17-jre -y
       - task: Bash@3
         displayName: Install Sonar Scanner
         name: sonar_install
