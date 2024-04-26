@@ -58,6 +58,14 @@ stages:
 
     - ${{ if eq(parameters.run_sonar, true) }}:
       - task: Bash@3
+        displayName: Install Java
+        name: java_install
+        inputs:
+          targetType: 'inline'
+          workingDirectory: '$(Pipeline.Workspace)/project'
+          script: |
+            apt install default-jre -y
+      - task: Bash@3
         displayName: Install Sonar Scanner
         name: sonar_install
         inputs:
