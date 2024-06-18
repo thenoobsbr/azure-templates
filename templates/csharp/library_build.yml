@@ -60,7 +60,7 @@ stages:
       - script: |
           sudo apt-get update
           sudo apt-get install -y openjdk-17-jdk
-          sudo update-alternatives --config java
+          echo 1 | sudo update-alternatives --config java
         displayName: 'Install Java 17'
 
       - script: |
