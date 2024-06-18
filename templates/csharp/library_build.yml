@@ -60,8 +60,7 @@ stages:
       - script: |
           sudo apt-get update
           sudo apt-get install -y openjdk-17-jdk
-          sudo update-java-alternatives -s temurin-17-jdk-amd64
-
+          echo 0 | sudo update-alternatives --config java
         displayName: 'Install Java 17'
 
       - task: Bash@3
