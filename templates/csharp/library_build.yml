@@ -94,12 +94,13 @@ stages:
               /d:sonar.host.url=$SONAR_URL\
               /d:sonar.dotnet.excludeTestProjects=true\
               /d:sonar.cs.vscoveragexml.reportsPaths=$(Pipeline.Workspace)/project/coverage.xml\
-              /d:sonar.java.jdkHome=/usr/lib/jvm/java-17-openjdk-amd64
+              /d:sonar.java.jdkHome=$JAVA_HOME
         env:
           SONAR_PROJECT_KEY: ${{parameters.sonar_project_key}}
           SONAR_PROJECT_ORGANIZATION: ${{parameters.sonar_organization}}
           SONAR_TOKEN: ${{parameters.sonar_token}}
           SONAR_URL: ${{parameters.sonar_url}}
+          JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
 
     - task: DotNetCoreCLI@2
       displayName: 'Restore'
@@ -151,6 +152,7 @@ stages:
             ./tools/dotnet-sonarscanner end /d:sonar.token=$SONAR_TOKEN
         env:
           SONAR_TOKEN: ${{parameters.sonar_token}}
+          JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
 
     - task: DotNetCoreCLI@2
       displayName: Pack
