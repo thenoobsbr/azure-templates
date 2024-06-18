@@ -60,8 +60,9 @@ stages:
       - script: |
           sudo apt-get update
           sudo apt-get install -y openjdk-17-jdk
-          echo 1 | sudo update-alternatives --config java
-          sudo update-java-alternatives -s java-1.7.0-openjdk-amd64          
+          sudo update-alternatives --config java --auto
+          sudo update-java-alternatives -l
+          
         displayName: 'Install Java 17'
 
       - task: Bash@3
