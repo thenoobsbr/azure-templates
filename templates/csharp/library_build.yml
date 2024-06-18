@@ -57,6 +57,19 @@ stages:
       path: 'templates'
 
     - ${{ if eq(parameters.run_sonar, true) }}:
+      - script: |
+          sudo apt-get update
+          sudo apt-get install openjdk-17-jdk -y
+          JAVA_HOME_CONTENT='export JAVA_HOME="/usr/lib/jvm/java-17-openjdk-amd64"
+          export PATH="$JAVA_HOME/bin:$PATH"'
+          
+          echo "$JAVA_HOME_CONTENT" | sudo tee /etc/profile.d/java_home.sh > /dev/null
+          
+          sudo chmod +x /etc/profile.d/java_home.sh
+          
+          source /etc/profile
+        displayName: 'Install Java'
+
       - task: Bash@3
         displayName: Install Sonar Scanner
         name: sonar_install
@@ -64,7 +77,7 @@ stages:
           targetType: 'inline'
           workingDirectory: '$(Pipeline.Workspace)/project'
           script: |
-            dotnet tool update dotnet-sonarscanner --tool-path tools --ignore-failed-sources --version 5.15.0
+            dotnet tool update dotnet-sonarscanner --tool-path tools --ignore-failed-sources
 
       - task: Bash@3
         displayName: Begin Sonar Scanner
@@ -73,12 +86,21 @@ stages:
           targetType: 'inline'
           workingDirectory: '$(Pipeline.Workspace)/project'
           script: |
-            ./tools/dotnet-sonarscanner begin /k:$SONAR_PROJECT_KEY /o:$SONAR_PROJECT_ORGANIZATION /v:$VERSION /d:sonar.token=$SONAR_TOKEN /d:sonar.host.url=$SONAR_URL /d:sonar.dotnet.excludeTestProjects=true /d:sonar.cs.vscoveragexml.reportsPaths=$(Pipeline.Workspace)/project/coverage.xml
+            ./tools/dotnet-sonarscanner begin \
+              /k:$SONAR_PROJECT_KEY \
+              /o:$SONAR_PROJECT_ORGANIZATION \
+              /v:$VERSION\
+              /d:sonar.token=$SONAR_TOKEN \
+              /d:sonar.host.url=$SONAR_URL \
+              /d:sonar.dotnet.excludeTestProjects=true \
+              /d:sonar.cs.vscoveragexml.reportsPaths=$(Pipeline.Workspace)/project/coverage.xml \
+              /d:sonar.java.jdkHome=$JAVA_HOME
         env:
           SONAR_PROJECT_KEY: ${{parameters.sonar_project_key}}
           SONAR_PROJECT_ORGANIZATION: ${{parameters.sonar_organization}}
           SONAR_TOKEN: ${{parameters.sonar_token}}
           SONAR_URL: ${{parameters.sonar_url}}
+          JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
 
     - task: DotNetCoreCLI@2
       displayName: 'Restore'
@@ -127,9 +149,11 @@ stages:
           targetType: 'inline'
           workingDirectory: '$(Pipeline.Workspace)/project'
           script: |
-            ./tools/dotnet-sonarscanner end /d:sonar.token=$SONAR_TOKEN
+            ./tools/dotnet-sonarscanner end \
+              /d:sonar.token=$SONAR_TOKEN
         env:
           SONAR_TOKEN: ${{parameters.sonar_token}}
+          JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
 
     - task: DotNetCoreCLI@2
       displayName: Pack
