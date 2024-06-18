@@ -32,7 +32,7 @@ stages:
       name: execute_script
       displayName: 'Execute version script'
       inputs:
-        filePath: '$(Pipeline.Workspace)/templates/scripts/compute_version.sh'
+        filePath: '$(Pipeline.Workspace)/templates/scripts/calculate_version.sh'
       env:
         PROJECT_PATH: '$(Pipeline.Workspace)/project'
         SOURCE_VERSION_MESSAGE: $(Build.SourceVersionMessage)
