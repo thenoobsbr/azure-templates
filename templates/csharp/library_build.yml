@@ -149,7 +149,9 @@ stages:
           targetType: 'inline'
           workingDirectory: '$(Pipeline.Workspace)/project'
           script: |
-            ./tools/dotnet-sonarscanner end /d:sonar.token=$SONAR_TOKEN
+            ./tools/dotnet-sonarscanner end\
+              /d:sonar.token=$SONAR_TOKEN\\
+              /d:sonar.java.jdkHome=$JAVA_HOME
         env:
           SONAR_TOKEN: ${{parameters.sonar_token}}
           JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
