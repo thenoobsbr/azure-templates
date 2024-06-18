@@ -49,7 +49,6 @@ stages:
     condition: succeeded()
     variables:
       version: ${{parameters.version}}
-      JAVA_HOME: $(Agent.ToolsDirectory)/jdk-17
     steps:
     - checkout: self
       path: 'project'
@@ -60,10 +59,7 @@ stages:
     - ${{ if eq(parameters.run_sonar, true) }}:
       - script: |
           sudo apt-get update
-          sudo apt-get install -y wget tar
-          wget https://download.java.net/java/GA/jdk17/0d48315e4c234c4db29d9eebf2a68f98/35/GPL/openjdk-17_linux-x64_bin.tar.gz
-          mkdir -p $(JAVA_HOME)
-          tar -xzf openjdk-17_linux-x64_bin.tar.gz -C $(JAVA_HOME) --strip-components=1
+          sudo apt-get install -y openjdk-17
         displayName: 'Install Java 17'
 
       - script: |
