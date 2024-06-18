@@ -49,6 +49,7 @@ stages:
     condition: succeeded()
     variables:
       version: ${{parameters.version}}
+      JAVA_HOME: $(Agent.ToolsDirectory)/jdk-17
     steps:
     - checkout: self
       path: 'project'
@@ -57,12 +58,19 @@ stages:
       path: 'templates'
 
     - ${{ if eq(parameters.run_sonar, true) }}:
-      - task: JavaToolInstaller@0
-        displayName: Install JDK 17
-        inputs:
-          versionSpec: '17.x'  # Ensures JDK 17 is used
-          jdkArchitectureOption: 'x64'
-          jdkSourceOption: 'PreInstalled'
+      - script: |
+          sudo apt-get update
+          sudo apt-get install -y wget tar
+          wget https://download.java.net/java/GA/jdk17/0d48315e4c234c4db29d9eebf2a68f98/35/GPL/openjdk-17_linux-x64_bin.tar.gz
+          mkdir -p $(JAVA_HOME)
+          tar -xzf openjdk-17_linux-x64_bin.tar.gz -C $(JAVA_HOME) --strip-components=1
+        displayName: 'Install Java 17'
+
+      - script: |
+          echo "##vso[task.setvariable variable=JAVA_HOME_17_X64]$(JAVA_HOME)"
+          export JAVA_HOME=$(JAVA_HOME_17_X64)
+          export PATH=$JAVA_HOME/bin:$PATH
+        displayName: 'Set JAVA_HOME environment variable'
       - task: Bash@3
         displayName: Install Sonar Scanner
         name: sonar_install
