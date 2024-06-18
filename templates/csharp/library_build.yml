@@ -86,7 +86,15 @@ stages:
           targetType: 'inline'
           workingDirectory: '$(Pipeline.Workspace)/project'
           script: |
-            ./tools/dotnet-sonarscanner begin /k:$SONAR_PROJECT_KEY /o:$SONAR_PROJECT_ORGANIZATION /v:$VERSION /d:sonar.token=$SONAR_TOKEN /d:sonar.host.url=$SONAR_URL /d:sonar.dotnet.excludeTestProjects=true /d:sonar.cs.vscoveragexml.reportsPaths=$(Pipeline.Workspace)/project/coverage.xml
+            ./tools/dotnet-sonarscanner begin\
+              /k:$SONAR_PROJECT_KEY\
+              /o:$SONAR_PROJECT_ORGANIZATION\
+              /v:$VERSION\
+              /d:sonar.token=$SONAR_TOKEN\
+              /d:sonar.host.url=$SONAR_URL\
+              /d:sonar.dotnet.excludeTestProjects=true\
+              /d:sonar.cs.vscoveragexml.reportsPaths=$(Pipeline.Workspace)/project/coverage.xml\
+              /d:sonar.java.jdkHome=/usr/lib/jvm/java-17-openjdk-amd64
         env:
           SONAR_PROJECT_KEY: ${{parameters.sonar_project_key}}
           SONAR_PROJECT_ORGANIZATION: ${{parameters.sonar_organization}}
