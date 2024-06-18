@@ -59,7 +59,7 @@ stages:
     - ${{ if eq(parameters.run_sonar, true) }}:
       - script: |
           sudo apt-get update
-          sudo apt-get install -y openjdk-17
+          sudo apt-get install -y openjdk-17-jdk
         displayName: 'Install Java 17'
 
       - script: |
