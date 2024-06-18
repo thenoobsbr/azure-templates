@@ -72,6 +72,7 @@ stages:
           targetType: 'inline'
           workingDirectory: '$(Pipeline.Workspace)/project'
           script: |
+            sudo update-alternatives --install "/usr/bin/javac" "javac" "/usr/lib/jvm/java-6.31-oracle/bin/javac" 1
             sudo update-alternatives --get-selections | grep "/bin/jinfo"
             sudo  update-java-alternatives --set java-1.8.0-openjdk-amd64
             java -version
