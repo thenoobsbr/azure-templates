@@ -13,24 +13,31 @@ stages:
     name: ${{parameters.pool}}
   jobs:
   - job: calculate_version
-    displayName: 'Calculate Semantic Version'
+    displayName: 'Calculate version'
     variables:
-      release: $[counter(variables['Build.SourceBranchName'], 1)]
-    steps:    
-    - checkout: 'self'
-      path: 'project'
-
+      current_counter: $[counter(variables['Build.SourceBranchName'], 1)]
+    steps:
+    - checkout: self
+      path: project
+    - script: |
+        cd $(Pipeline.Workspace)/project
+        git fetch --tags --prune
+        LAST_TAG=$(git describe --tags `git rev-list --tags --max-count=1`)
+        echo "##vso[task.setvariable variable=LAST_TAG]$LAST_TAG"
+      displayName: 'Get last tag'
     - checkout: 'templates'
-      path: 'templates'
-    
+      path: templates
+      
     - task: Bash@3
-      name: calculate_version
-      displayName: 'Calculate Version'
+      name: execute_script
+      displayName: 'Execute version script'
       inputs:
-        filePath: '$(Pipeline.Workspace)/templates/scripts/calculate_version.sh'
-        workingDirectory: '$(Pipeline.Workspace)/project'
+        filePath: '$(Pipeline.Workspace)/templates/shell-scripts/compute-version.sh'
       env:
+        PROJECT_PATH: '$(Pipeline.Workspace)/project'
         SOURCE_VERSION_MESSAGE: $(Build.SourceVersionMessage)
         SOURCE_BRANCH: $(Build.SourceBranch)
         PR_SOURCE_BRANCH: $(System.PullRequest.SourceBranch)
         REASON: $(Build.Reason)
+        LAST_TAG: $(LAST_TAG)
+        CURRENT_COUNTER: $(current_counter)
