@@ -91,7 +91,7 @@ stages:
     displayName: 'Run Sonar'
     pool:
       name: ${{parameters.pool}}
-    dependsOn: build_package
+    dependsOn: ${{parameters.depends_on}}
     jobs:
       - job: sonar
         displayName: 'Sonar'
