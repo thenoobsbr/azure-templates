@@ -93,7 +93,7 @@ stages:
               /d:sonar.token=$SONAR_TOKEN \
               /d:sonar.host.url=$SONAR_URL \
               /d:sonar.dotnet.excludeTestProjects=true \
-              /d:sonar.cs.vscoveragexml.reportsPaths=$(Pipeline.Workspace)/project/coverage.xml \
+              /d:sonar.cs.opencover.reportsPaths=$(Pipeline.Workspace)/project/test*/*/TestResults/*/coverage.opencover.xml \
               /d:sonar.java.jdkHome=$JAVA_HOME
         env:
           SONAR_PROJECT_KEY: ${{parameters.sonar_project_key}}
@@ -117,27 +117,17 @@ stages:
 
     - ${{ if eq(parameters.run_tests, true) }}:
       - task: Bash@3
-        displayName: Install Coverage
-        name: coverage_install
-        inputs:
-          targetType: 'inline'
-          workingDirectory: '$(Pipeline.Workspace)/project'
-          script: |
-            dotnet tool update dotnet-coverage --tool-path tools --ignore-failed-sources
-
-      - task: Bash@3
         displayName: Run tests with coverage
         name: coverage_run
         inputs:
           targetType: 'inline'
           workingDirectory: '$(Pipeline.Workspace)/project'
           script: |
-            ./tools/dotnet-coverage collect "dotnet test" -f xml -o "$(Pipeline.Workspace)/project/coverage.xml"
+            dotnet test --no-restore --no-build --collect:"XPlat Code Coverage" --settings $(Pipeline.Workspace)/templates/coverlet/coverlet.runsettings --logger trx
 
-      - task: PublishCodeCoverageResults@1
+      - task: PublishCodeCoverageResults@2
         inputs:
-          codeCoverageTool: 'Cobertura' 
-          summaryFileLocation: $(Pipeline.Workspace)/project/coverage.xml
+          summaryFileLocation: $(Pipeline.Workspace)/project/test*/*/TestResults/*/coverage.opencover.xml
           pathToSources: $(Pipeline.Workspace)/project/src/
         displayName: Publish coverage
     
