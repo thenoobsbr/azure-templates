@@ -106,14 +106,14 @@ stages:
       displayName: 'Restore'
       inputs:
         command: 'restore'
-        projects: '$(Pipeline.Workspace)/project/${{parameters.projects}}'
+        projects: '$(Pipeline.Workspace)/project/*.sln'
 
     - task: DotNetCoreCLI@2
       displayName: 'Build'
       inputs:
         command: 'build'
-        projects: '$(Pipeline.Workspace)/project/${{parameters.projects}}'
-        arguments: '--no-restore --configuration Release'
+        projects: '$(Pipeline.Workspace)/project/*.sln'
+        arguments: '--no-incremental --no-restore --configuration Release'
 
     - ${{ if eq(parameters.run_tests, true) }}:
       - task: Bash@3

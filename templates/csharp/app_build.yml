@@ -137,7 +137,7 @@ stages:
           targetType: 'inline'
           workingDirectory: '$(Pipeline.Workspace)/project'
           script: |
-            dotnet test --no-restore --no-build --configuration Release --collect:"XPlat Code Coverage" --settings $(Pipeline.Workspace)/templates/coverlet/coverlet.runsettings --logger trx
+            dotnet test --no-incremental --no-restore --no-build --configuration Release --collect:"XPlat Code Coverage" --settings $(Pipeline.Workspace)/templates/coverlet/coverlet.runsettings --logger trx
 
       - task: PublishCodeCoverageResults@2
         inputs:
