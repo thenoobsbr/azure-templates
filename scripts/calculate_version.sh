@@ -118,6 +118,11 @@ then
     echo "#           HOTFIX / RELEASE          #"
     echo "#######################################"
 
+    export VERSION="$(echo $SOURCE_BRANCH | cut -d'/' -f3)"
+    export VERSION_MAJOR="$(echo $VERSION | cut -d'.' -f1)"
+    export VERSION_MINOR="$(echo $VERSION | cut -d'.' -f2)"
+    export VERSION_PATCH="$(echo $VERSION | cut -d'.' -f3)"
+
     export VERSION_PREFIX="$VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH"
     export VERSION_SUFFIX="rc.${CURRENT_COUNTER}"
     export VERSION="$VERSION_PREFIX-$VERSION_SUFFIX"
@@ -142,9 +147,7 @@ echo "#######################################"
 echo "#              OTHERS                 #"
 echo "#######################################"
 
-export VERSION_MAJOR="$(echo $LAST_TAG | cut -d'.' -f1)"
-export VERSION_MINOR="$(echo $LAST_TAG | cut -d'.' -f2)"
-export VERSION_PATCH="$(echo $LAST_TAG | cut -d'.' -f3)"
+export VERSION_PREFIX="$VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH"
 export VERSION_SUFFIX="ci.${CURRENT_COUNTER}"
 export VERSION="$VERSION_PREFIX-$VERSION_SUFFIX"
 
