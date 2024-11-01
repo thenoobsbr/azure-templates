@@ -117,12 +117,12 @@ then
     echo "#######################################"
     echo "#           HOTFIX / RELEASE          #"
     echo "#######################################"
-    
+
     export VERSION="$(echo $SOURCE_BRANCH | cut -d'/' -f3)"
     export VERSION_MAJOR="$(echo $VERSION | cut -d'.' -f1)"
     export VERSION_MINOR="$(echo $VERSION | cut -d'.' -f2)"
     export VERSION_PATCH="$(echo $VERSION | cut -d'.' -f3)"
-    
+
     export VERSION_PREFIX="$VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH"
     export VERSION_SUFFIX="rc.${CURRENT_COUNTER}"
     export VERSION="$VERSION_PREFIX-$VERSION_SUFFIX"
@@ -144,7 +144,24 @@ then
 fi
 
 echo "#######################################"
-echo "#            NOT IMPLEMENTED          #"
+echo "#              OTHERS                 #"
 echo "#######################################"
 
-exit 1
+export VERSION_PREFIX="$VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH"
+export VERSION_SUFFIX="ci.${CURRENT_COUNTER}"
+export VERSION="$VERSION_PREFIX-$VERSION_SUFFIX"
+
+echo "##vso[task.setvariable variable=version;isOutput=true]$VERSION"
+echo "##vso[task.setvariable variable=staging_deploy;isOutput=true]False"
+echo "##vso[task.setvariable variable=production_deploy;isOutput=true]False"
+echo "##vso[build.updatebuildnumber]$VERSION"
+
+echo "#######################################"
+echo "#               OUTPUT                #"
+echo "#######################################"
+echo "Version: $VERSION"
+echo "Staging deploy: FALSE                  #"
+echo "Production deploy: FALSE              #"
+echo "#######################################"
+
+exit 0
