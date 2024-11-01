@@ -116,37 +116,19 @@ stages:
               source /etc/profile
             displayName: 'Install Java'
 
-          - task: Bash@3
-            displayName: Install Sonar Scanner
-            name: sonar_install
+          - task: SonarCloudPrepare@1
             inputs:
-              targetType: 'inline'
-              workingDirectory: '$(Pipeline.Workspace)/project'
-              script: |
-                dotnet tool update dotnet-sonarscanner --tool-path tools --ignore-failed-sources
-
-          - task: Bash@3
-            displayName: Begin Sonar Scanner
-            name: sonar_begin
-            inputs:
-              targetType: 'inline'
-              workingDirectory: '$(Pipeline.Workspace)/project'
-              script: |
-                ./tools/dotnet-sonarscanner begin \
-                  /k:$SONAR_PROJECT_KEY \
-                  /o:$SONAR_PROJECT_ORGANIZATION \
-                  /v:$VERSION\
-                  /d:sonar.token=$SONAR_TOKEN \
-                  /d:sonar.host.url=$SONAR_URL \
-                  /d:sonar.dotnet.excludeTestProjects=true \
-                  /d:sonar.cs.opencover.reportsPaths=$(Pipeline.Workspace)/project/test*/*/TestResults/*/coverage.opencover.xml \
-                  /d:sonar.java.jdkHome=$JAVA_HOME
-            env:
-              SONAR_PROJECT_KEY: ${{parameters.sonar_project_key}}
-              SONAR_PROJECT_ORGANIZATION: ${{parameters.sonar_organization}}
-              SONAR_TOKEN: ${{parameters.sonar_token}}
-              SONAR_URL: ${{parameters.sonar_url}}
-              JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
+              SonarCloud: 'SonarCloud'
+              organization: ${{parameters.sonar_organization}}
+              scannerMode: 'MSBuild'
+              projectKey: ${{parameters.sonar_project_key}}
+              projectVersion: '${{parameters.version}}'
+              extraProperties: |
+                # Additional properties that will be passed to the scanner, 
+                # Put one key=value per line, example:
+                sonar.exclusions=**/*test*
+                sonar.exclusions=**/lib/**
+                sonar.coverageReportPaths=$(Pipeline.Workspace)/project/Reports_Coverage/SonarQube.xml
 
           - task: DotNetCoreCLI@2
             displayName: 'Restore'
@@ -158,7 +140,7 @@ stages:
             displayName: 'Build'
             inputs:
               command: 'build'
-              projects: '$(Pipeline.Workspace)/project/*.sln'
+              projects: '$(Pipeline.Workspace)/project'
               arguments: '--no-incremental --no-restore --configuration Release'
 
           - ${{ if eq(parameters.run_tests, true) }}:
@@ -177,16 +159,9 @@ stages:
                 pathToSources: $(Pipeline.Workspace)/project/src/
               displayName: Publish coverage
 
-          - task: Bash@3
-            displayName: End Sonar Scanner
-            name: sonar_end
-            inputs:
-              targetType: 'inline'
-              workingDirectory: '$(Pipeline.Workspace)/project'
-              script: |
-                ./tools/dotnet-sonarscanner end \
-                  /d:sonar.token=$SONAR_TOKEN
-            env:
-              SONAR_TOKEN: ${{parameters.sonar_token}}
-              JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
+          - task: SonarCloudAnalyze@1
+            displayName: 'Run Code Analysis'
+
+          - task: SonarCloudPublish@1
+            displayName: 'Publish Quality Gate Result'
           
