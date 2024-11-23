@@ -37,7 +37,7 @@ parameters:
   type: boolean
   default: true
 - name: target_frameworks
-  type: array
+  type: object
   default:
     - '5.x'
     - '6.x'
