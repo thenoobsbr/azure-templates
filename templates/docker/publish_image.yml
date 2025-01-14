@@ -18,6 +18,9 @@ parameters:
   - Docker Registry
 - name: image_name
   type: string
+- name: container_registry
+  type: string
+  default: 'digital_ocean'
 - name: dll_name
   type: string
 - name: target_framework
@@ -83,7 +86,7 @@ stages:
               name: build_and_push
               displayName: 'Build and push'
               inputs:
-                containerRegistry: 'digital_ocean'
+                containerRegistry: ${{ parameters.container_registry }}
                 repository: ${{ parameters.image_name }}
                 command: 'buildAndPush'
                 Dockerfile: '$(Pipeline.Workspace)/templates/Dockerfiles/Dockerfile_${{ parameters.target_framework }}'
