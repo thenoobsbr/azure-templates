@@ -36,6 +36,20 @@ parameters:
 - name: run_sonar
   type: boolean
   default: true
+- name: target_frameworks
+  type: object
+  default:
+    - '5.x'
+    - '6.x'
+    - '7.x'
+    - '8.x'
+    - '9.x'
+  values:
+    - '5.x'
+    - '6.x'
+    - '7.x'
+    - '8.x'
+    - '9.x'
 
 stages:
 - stage: build_package
@@ -55,6 +69,13 @@ stages:
 
     - checkout: 'templates'
       path: 'templates'
+
+    - ${{ each target in parameters.target_frameworks }}:
+      - task: UseDotNet@2
+        displayName: 'Installing .Net Core SDK'
+        inputs:
+          packageType: 'sdk'
+          version: ${{ target }}
 
     - task: DotNetCoreCLI@2
       displayName: 'Restore'
@@ -129,6 +150,13 @@ stages:
                 sonar.exclusions=**/*test*
                 sonar.exclusions=**/lib/**
                 sonar.coverageReportPaths=$(Pipeline.Workspace)/project/Reports_Coverage/SonarQube.xml
+
+          - ${{ each target in parameters.target_frameworks }}:
+            - task: UseDotNet@2
+              displayName: 'Installing .Net Core SDK'
+              inputs:
+                packageType: 'sdk'
+                version: ${{ target }}
 
           - task: DotNetCoreCLI@2
             displayName: 'Restore'
