@@ -31,24 +31,23 @@ parameters:
   default: true
 
 jobs:
-  - template: ../../versioning/manual/calculate_sem_version.yml
-    parameters:
-      project_path: ${{parameters.project_path}}
-      increment: ${{parameters.increment_version}}
   - job: build
     displayName: 'Build app'
-    dependsOn: 'calculate_version'
     condition: succeeded()
     variables:
       sdk_version: ${{ parameters.target_framework }}.x
       net_version: net${{ parameters.target_framework }}.0
-      version: $[dependencies.calculate_version.outputs.new_version]
     steps:
     - checkout: self
       path: 'project'
 
     - checkout: 'templates'
       path: 'templates'
+
+    - template: templates/versioning/manual/calculate_sem_version.yml@templates
+      parameters:
+        project_path: ${{parameters.project_path}}
+        increment: ${{parameters.increment_version}}
 
     - task: UseDotNet@2
       displayName: 'Installing .Net Core SDK'
@@ -112,7 +111,7 @@ jobs:
         modifyOutputPath: true
         configuration: 'Release'
         versioningScheme: byEnvVar
-        versionEnvVar: version
+        versionEnvVar: $[calculate_version.new_version]
 
     - task: PublishPipelineArtifact@1
       displayName: Store Application Artifact
