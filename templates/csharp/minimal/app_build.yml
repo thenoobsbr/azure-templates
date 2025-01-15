@@ -36,7 +36,7 @@ stages:
   pool:
     name: ${{parameters.pool}}
   jobs:
-  - template: templates/versioning/manual/calculate_sem_version.yml
+  - template: ../../versioning/manual/calculate_sem_version.yml
     parameters:
       project_path: ${{parameters.project_path}}
       increment: ${{parameters.increment_version}}
