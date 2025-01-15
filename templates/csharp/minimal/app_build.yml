@@ -44,7 +44,7 @@ jobs:
     - checkout: 'templates'
       path: 'templates'
 
-    - template: templates/versioning/manual/calculate_sem_version.yml@templates
+    - template: /templates/versioning/manual/calculate_sem_version.yml@templates
       parameters:
         project_path: ${{parameters.project_path}}
         increment: ${{parameters.increment_version}}
