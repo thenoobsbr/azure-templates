@@ -41,7 +41,7 @@ jobs:
     variables:
       sdk_version: ${{ parameters.target_framework }}.x
       net_version: net${{ parameters.target_framework }}.0
-      release: $[counter(format('{0}:{1}', variables['Build.SourceBranchName'], variables['project_path'])), 1)]
+      release: $[counter(format('{0}:{1}', variables['Build.SourceBranchName'], variables['project_path']), 1)]
     steps:
     - checkout: self
       path: 'project'
