@@ -10,9 +10,6 @@ parameters:
   type: string
   default: '$(Pipeline.Workspace)/project'
 
-variables:
-  counter: $[counter(concat(variables['Build.SourceBranchName'], parameters['project_path']), 1)]
-
 steps:    
   - task: Bash@3
     name: execute_script
@@ -21,5 +18,5 @@ steps:
       filePath: '$(Pipeline.Workspace)/templates/scripts/calculate_manual_version.sh'
     env:
       INCREMENT: ${{ parameters.increment}}
-      CURRENT_COUNTER: ${{ variables.counter }}
+      CURRENT_COUNTER: ${{counter(concat(variables['Build.SourceBranchName'], parameters['project_path']), 1)}}
       PROJECT_PATH: ${{ parameters.project_path }}
