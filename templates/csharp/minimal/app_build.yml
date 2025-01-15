@@ -42,7 +42,7 @@ jobs:
       sdk_version: ${{ parameters.target_framework }}.x
       net_version: net${{ parameters.target_framework }}.0
       release: $[counter(format('{0}:{1}', variables['Build.SourceBranchName'], '${{parameters.project_path}}'), 1)]
-      project_absolute_path: $[path.join(variables['Pipeline.Workspace'], 'project', '${{parameters.project_path}}')]
+      project_absolute_path: $[format('{0}/{1}/{2}', variables['Pipeline.Workspace'], 'project', '${{parameters.project_path}}')]
     steps:
     - checkout: self
       path: 'project'
