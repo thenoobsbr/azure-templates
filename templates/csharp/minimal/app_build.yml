@@ -30,12 +30,7 @@ parameters:
   type: boolean
   default: true
 
-stages:
-- stage: build_app
-  displayName: 'App Build'
-  pool:
-    name: ${{parameters.pool}}
-  jobs:
+jobs:
   - template: ../../versioning/manual/calculate_sem_version.yml
     parameters:
       project_path: ${{parameters.project_path}}
