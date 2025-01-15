@@ -15,7 +15,7 @@ stages:
   - job: calculate_version
     displayName: 'Calculate version'
     variables:
-      current_counter: $[[counter(variables['Build.SourceBranchName'], 1)]]
+      current_counter: $[counter(variables['Build.SourceBranchName'], 1)]
     steps:
     - checkout: self
       path: project

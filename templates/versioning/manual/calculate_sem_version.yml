@@ -10,7 +10,7 @@ parameters:
   type: string
   default: '$(Pipeline.Workspace)/project'
 - name: release
-  type: number
+  type: string
 - name: suffix
   type: string
 
