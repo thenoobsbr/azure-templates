@@ -52,28 +52,28 @@ jobs:
 
     - template: /templates/versioning/manual/calculate_sem_version.yml@templates
       parameters:
-        project_path: $[variables.project_absolute_path]
+        project_path: $(project_absolute_path)
         increment: ${{parameters.increment_version}}
-        release: $[variables.release]
+        release: $(release)
         suffix: ${{parameters.suffix}}
 
     - task: UseDotNet@2
       displayName: 'Installing .Net Core SDK'
       inputs:
         packageType: 'sdk'
-        version: ${{ variables.sdk_version }}
+        version: $(sdk_version)
 
     - task: DotNetCoreCLI@2
       displayName: 'Restore'
       inputs:
         command: 'restore'
-        projects: $[variables.project_absolute_path]
+        projects: $(project_absolute_path)
 
     - task: DotNetCoreCLI@2
       displayName: 'Build'
       inputs:
         command: 'build'
-        projects: $[variables.project_absolute_path]
+        projects: $(project_absolute_path)
         arguments: '--no-incremental --no-restore --configuration Release'
 
     - ${{ if eq(parameters.run_tests, true) }}:
@@ -109,12 +109,12 @@ jobs:
         displayName: Publish coverage
 
     - task: DotNetCoreCLI@2
-      displayName: Publish for ${{ variables.net_version }}
+      displayName: Publish for $(net_version)
       inputs:
         command: 'publish'
         publishWebProjects: false
-        projects: $[variables.project_absolute_path]
-        arguments: '-c Release -o $(Build.ArtifactStagingDirectory)/${{ variables.net_version }} -f ${{ variables.net_version }}'
+        projects: $(project_absolute_path)
+        arguments: '-c Release -o $(Build.ArtifactStagingDirectory)/$(net_version) -f $(net_version)'
         zipAfterPublish: true
         modifyOutputPath: true
         configuration: 'Release'
