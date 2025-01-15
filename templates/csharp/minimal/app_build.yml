@@ -35,7 +35,6 @@ stages:
   displayName: 'App Build'
   pool:
     name: ${{parameters.pool}}
-  dependsOn: ${{parameters.depends_on}}
   jobs:
   - template: templates/versioning/manual/calculate_sem_version.yml
     parameters:
