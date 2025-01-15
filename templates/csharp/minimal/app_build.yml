@@ -61,15 +61,6 @@ stages:
         packageType: 'sdk'
         version: ${{ variables.sdk_version }}
 
-    - ${{ if eq(parameters.install_new_relic, true) }}:
-      - task: DotNetCoreCLI@2
-        displayName: 'Add NewRelic'
-        inputs:
-          command: 'custom'
-          projects: ${{parameters.project_path}}
-          custom: 'add'
-          arguments: 'package NewRelic.Agent'
-
     - task: DotNetCoreCLI@2
       displayName: 'Restore'
       inputs:
