@@ -41,7 +41,8 @@ jobs:
     variables:
       sdk_version: ${{ parameters.target_framework }}.x
       net_version: net${{ parameters.target_framework }}.0
-      release: $[counter(format('{0}:{1}', variables['Build.SourceBranchName'], variables['project_path']), 1)]
+      release: $[counter(format('{0}:{1}', variables['Build.SourceBranchName'], parameters.project_path), 1)]
+      project_absolute_path: $[path.join($(Pipeline.Workspace), 'project', parameters.project_path)]
     steps:
     - checkout: self
       path: 'project'
@@ -51,7 +52,7 @@ jobs:
 
     - template: /templates/versioning/manual/calculate_sem_version.yml@templates
       parameters:
-        project_path: ${{parameters.project_path}}
+        project_path: ${{variables.project_absolute_path}}
         increment: ${{parameters.increment_version}}
         release: ${{variables.release}}
         suffix: ${{parameters.suffix}}
@@ -66,13 +67,13 @@ jobs:
       displayName: 'Restore'
       inputs:
         command: 'restore'
-        projects: ${{parameters.project_path}}
+        projects: ${{variables.project_absolute_path}}
 
     - task: DotNetCoreCLI@2
       displayName: 'Build'
       inputs:
         command: 'build'
-        projects: ${{parameters.project_path}}
+        projects: ${{variables.project_absolute_path}}
         arguments: '--no-incremental --no-restore --configuration Release'
 
     - ${{ if eq(parameters.run_tests, true) }}:
@@ -112,7 +113,7 @@ jobs:
       inputs:
         command: 'publish'
         publishWebProjects: false
-        projects: ${{parameters.project_path}}
+        projects: ${{variables.project_absolute_path}}
         arguments: '-c Release -o $(Build.ArtifactStagingDirectory)/${{ variables.net_version }} -f ${{ variables.net_version }}'
         zipAfterPublish: true
         modifyOutputPath: true
