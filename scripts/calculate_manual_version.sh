@@ -11,9 +11,11 @@ echo "#######################################"
 echo "#            LAST VERSION             #"
 echo "#######################################"
 
-if [[ $PROJECT_PATH =~ ".csproj" ]];
+if [[ $PROJECT_PATH =~ ".csproj" ]]; then
   last_version=$(grep -oP '(?<=<Version>)[^<]+' $PROJECT_PATH)
-then
+  if [ -z "$last_version" ]; then
+    last_version="0.0.0"
+  fi
 else
   cd $PROJECT_PATH
   git fetch --tags --prune
