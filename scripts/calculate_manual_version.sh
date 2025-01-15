@@ -13,12 +13,12 @@ echo "#######################################"
 echo "#            LAST VERSION             #"
 echo "#######################################"
 
-if [ $PROJECT_PATH =~ ".csproj" ]; then
+if [[ $PROJECT_PATH =~ ".csproj" ]]; then
   echo "The Project is a .csproj"
   echo "Reading last version from .csproj"
   
   last_version=$(grep -oP '(?<=<Version>).*?(?=</Version>)' $PROJECT_PATH)
-  if [ -z $last_version ]; then
+  if [[ -z $last_version ]]; then
     last_version="0.0.0"
   fi
 else
