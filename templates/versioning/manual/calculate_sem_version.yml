@@ -1,10 +1,4 @@
 parameters:
-- name: pool
-  type: string
-  default: 'Azure Pipelines'
-  values:
-  - 'Azure Pipelines'
-  - 'Self-hosted'
 - name: increment
   type: string
   default: 'patch'
@@ -16,27 +10,22 @@ parameters:
   type: string
   default: '$(Pipeline.Workspace)/project'
 
-stages:
-- stage: calculate_sem_version
-  displayName: 'Calculate Sem Version'
-  pool:
-    name: ${{parameters.pool}}
-  jobs:
-  - job: calculate_version
-    displayName: 'Calculate version'
-    variables:
-      current_counter: $[counter(concat(variables['Build.SourceBranchName'], parameters['project_path']), 1)]
-    steps:
-    - checkout: self
-      path: project
-    - checkout: 'templates'
-      path: templates      
-    - task: Bash@3
-      name: execute_script
-      displayName: 'Execute version script'
-      inputs:
-        filePath: '$(Pipeline.Workspace)/templates/scripts/calculate_manual_version.sh'
-      env:
-        INCREMENT: $(increment)
-        CURRENT_COUNTER: $(current_counter)
-        PROJECT_PATH: $(PROJECT_PATH)
+jobs:
+- job: calculate_version
+  displayName: 'Calculate version'
+  variables:
+    current_counter: $[counter(concat(variables['Build.SourceBranchName'], parameters['project_path']), 1)]
+  steps:
+  - checkout: self
+    path: project
+  - checkout: 'templates'
+    path: templates      
+  - task: Bash@3
+    name: execute_script
+    displayName: 'Execute version script'
+    inputs:
+      filePath: '$(Pipeline.Workspace)/templates/scripts/calculate_manual_version.sh'
+    env:
+      INCREMENT: $(increment)
+      CURRENT_COUNTER: $(current_counter)
+      PROJECT_PATH: $(PROJECT_PATH)

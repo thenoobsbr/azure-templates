@@ -1,0 +1,137 @@
+parameters:
+- name: artifact_name
+  type: string
+  default: 'artifact'
+- name: project_path
+  type: string
+- name: pool
+  type: string
+  default: 'Azure Pipelines'
+  values:
+  - 'Azure Pipelines'
+  - 'Self-hosted'
+- name: target_framework
+  type: string
+  default: 9
+  values:
+  - 5
+  - 6
+  - 7
+  - 8
+  - 9
+- name: increment_version
+  type: string
+  default: 'patch'
+  values:
+  - 'major'
+  - 'minor'
+  - 'patch'
+- name: run_tests
+  type: boolean
+  default: true
+
+stages:
+- stage: build_app
+  displayName: 'App Build'
+  pool:
+    name: ${{parameters.pool}}
+  dependsOn: ${{parameters.depends_on}}
+  jobs:
+  - template: templates/versioning/manual/calculate_sem_version.yml
+    parameters:
+      project_path: ${{parameters.project_path}}
+      increment: ${{parameters.increment_version}}
+  - job: build
+    displayName: 'Build app'
+    dependsOn: 'calculate_version'
+    condition: succeeded()
+    variables:
+      sdk_version: ${{ parameters.target_framework }}.x
+      net_version: net${{ parameters.target_framework }}.0
+      version: $[dependencies.calculate_version.outputs.new_version]
+    steps:
+    - checkout: self
+      path: 'project'
+
+    - checkout: 'templates'
+      path: 'templates'
+
+    - task: UseDotNet@2
+      displayName: 'Installing .Net Core SDK'
+      inputs:
+        packageType: 'sdk'
+        version: ${{ variables.sdk_version }}
+
+    - ${{ if eq(parameters.install_new_relic, true) }}:
+      - task: DotNetCoreCLI@2
+        displayName: 'Add NewRelic'
+        inputs:
+          command: 'custom'
+          projects: ${{parameters.project_path}}
+          custom: 'add'
+          arguments: 'package NewRelic.Agent'
+
+    - task: DotNetCoreCLI@2
+      displayName: 'Restore'
+      inputs:
+        command: 'restore'
+        projects: ${{parameters.project_path}}
+
+    - task: DotNetCoreCLI@2
+      displayName: 'Build'
+      inputs:
+        command: 'build'
+        projects: ${{parameters.project_path}}
+        arguments: '--no-incremental --no-restore --configuration Release'
+
+    - ${{ if eq(parameters.run_tests, true) }}:
+      - task: DotNetCoreCLI@2
+        displayName: Install ReportGenerator Global Tool
+        inputs:
+          command: custom
+          custom: tool
+          arguments: update dotnet-reportgenerator-globaltool --tool-path tools --ignore-failed-sources
+
+      - bash: |
+          ls $(Pipeline.Workspace)/project/test*/**/*.csproj | xargs -L1 dotnet test --collect:"XPlat Code Coverage" --settings $COVERLET_PATH --logger trx
+        displayName: Test
+        env:
+          COVERLET_PATH: '$(Pipeline.Workspace)/templates/coverlet/coverlet.runsettings'
+
+      - bash: |
+          ./tools/reportgenerator "-reports:$(Pipeline.Workspace)/project/test*/*/TestResults/*/coverage.cobertura.xml" "-targetdir:$(Pipeline.Workspace)/project/Reports_Coverage" -reportTypes:"Cobertura;SonarQube";
+        displayName: Generate code coverage report
+
+      - task: PublishTestResults@2
+        inputs:
+          testResultsFormat: 'VSTest'
+          testResultsFiles: '$(Pipeline.Workspace)/project/**/*.trx'
+          mergeTestResults: true
+        displayName: Publish test result
+
+      - task: PublishCodeCoverageResults@1
+        inputs:
+          codeCoverageTool: 'Cobertura'
+          summaryFileLocation: $(Pipeline.Workspace)/project/Reports_Coverage/Cobertura.xml
+          pathToSources: $(Pipeline.Workspace)/project/src/
+        displayName: Publish coverage
+
+    - task: DotNetCoreCLI@2
+      displayName: Publish for ${{ variables.net_version }}
+      inputs:
+        command: 'publish'
+        publishWebProjects: false
+        projects: ${{parameters.project_path}}
+        arguments: '-c Release -o $(Build.ArtifactStagingDirectory)/${{ variables.net_version }} -f ${{ variables.net_version }}'
+        zipAfterPublish: true
+        modifyOutputPath: true
+        configuration: 'Release'
+        versioningScheme: byEnvVar
+        versionEnvVar: version
+
+    - task: PublishPipelineArtifact@1
+      displayName: Store Application Artifact
+      inputs:
+        targetPath: '$(System.ArtifactsDirectory)'
+        artifact: '${{parameters.artifact_name}}'
+          
