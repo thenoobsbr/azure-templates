@@ -13,7 +13,7 @@ echo "#######################################"
 echo "#            LAST VERSION             #"
 echo "#######################################"
 
-if [[ $PROJECT_PATH =~ ".csproj" ]]; then
+if [ $PROJECT_PATH =~ ".csproj" ]; then
   echo "The Project is a .csproj"
   echo "Reading last version from .csproj"
   
