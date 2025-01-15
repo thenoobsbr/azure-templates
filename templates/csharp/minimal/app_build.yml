@@ -34,7 +34,6 @@ parameters:
 
 jobs:
   - job: ${{ parameters.job_name }}
-    displayName: 'Build app'
     condition: succeeded()
     variables:
       sdk_version: ${{ parameters.target_framework }}.x
