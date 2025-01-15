@@ -30,6 +30,7 @@ parameters:
   - 'patch'
 - name: suffix
   type: string
+  default: ''
 - name: run_tests
   type: boolean
   default: true
