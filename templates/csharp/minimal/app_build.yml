@@ -10,6 +10,8 @@ parameters:
   values:
   - 'Azure Pipelines'
   - 'Self-hosted'
+- name: job_name
+  type: string
 - name: target_framework
   type: string
   default: 9
@@ -31,7 +33,7 @@ parameters:
   default: true
 
 jobs:
-  - job: build
+  - job: ${{ parameters.job_name }}
     displayName: 'Build app'
     condition: succeeded()
     variables:
