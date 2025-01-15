@@ -3,8 +3,10 @@
 echo "#######################################"
 echo "#              INPUT                  #"
 echo "#######################################"
+echo "ProjectPath: $PROJECT_PATH"
 echo "Increment: $INCREMENT"
-echo "Current counter: $CURRENT_COUNTER"
+echo "Release: $RELEASE"
+echo "Suffix: $SUFFIX"
 echo "#######################################"
 
 echo "#######################################"
@@ -47,6 +49,10 @@ elif [[ $INCREMENT == "patch" ]]; then
 fi
 
 new_version="$major.$minor.$patch"
+
+if [[ $SUFFIX != "" ]]; then
+  new_version="$new_version-$SUFFIX.$RELEASE"
+fi
 
 echo "New version: $new_version"
 echo "Major: $major"
