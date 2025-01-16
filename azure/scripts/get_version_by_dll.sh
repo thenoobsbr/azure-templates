@@ -16,7 +16,7 @@ echo "#####################"
 echo "#    Get version    #"
 echo "#####################"
 
-version=$(exiftool ${DLL_PATH} | grep -i Version)
+version=$(exiftool ${DLL_PATH} | grep -i "Production Version")
 
 echo "Version: $version"
 echo "#####################"
