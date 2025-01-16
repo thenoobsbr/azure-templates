@@ -1,0 +1,11 @@
+- name: dll_path
+  type: string
+
+steps:
+- task: Bash@3
+  name: get_version
+  displayName: 'Get version'
+  inputs:
+    filePath: '$(Pipeline.Workspace)/templates/scripts/get_version.sh'
+  env:
+    DLL_PATH: ${{ parameters.dll_path }}

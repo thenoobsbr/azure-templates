@@ -1,0 +1,87 @@
+parameters:
+- name: name
+  type: string
+- name: display_name
+  type: string
+- name: condition
+  type: boolean
+  default: true
+- name: artifact_name
+  type: string
+- name: environment
+  type: string
+  default: Docker Registry
+- name: image_name
+  type: string
+- name: container_registry
+  type: string
+- name: dll_name
+  type: string
+- name: target_framework
+  type: string
+  default: net9.0
+  values:
+  - net5.0
+  - net6.0
+  - net7.0
+  - net8.0
+  - net9.0
+
+jobs:
+  - deployment: ${{parameters.name}}
+    displayName: '${{parameters.display_name}}'
+    environment: ${{parameters.environment}}
+    condition: and(succeeded(), ${{parameters.condition}})
+    workspace:
+      clean: all
+    variables:
+      dll_name: ${{ parameters.dll_name }}
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - checkout: 'templates'
+            path: 'templates'
+
+          - task: replacetokens@5
+            name: prepare_dockerfile
+            displayName: 'Prepare Dockerfile'
+            inputs:
+              rootDirectory: '$(Pipeline.Workspace)'
+              targetFiles: 'templates/Dockerfiles/Dockerfile_${{ parameters.target_framework }}'
+              encoding: 'auto'
+              tokenPattern: 'default'
+              writeBOM: true
+              actionOnMissing: 'warn'
+              keepToken: false
+              actionOnNoFiles: 'continue'
+              enableTransforms: false
+              enableRecursion: false
+              useLegacyPattern: false
+              enableTelemetry: true
+
+          - task: ExtractFiles@1
+            name: extract_artifact
+            displayName: 'Extract artifact'
+            inputs:
+              archiveFilePatterns: '$(Pipeline.Workspace)/${{parameters.artifact_name}}/**/*.zip'
+              destinationFolder: '$(Pipeline.Workspace)/${{parameters.artifact_name}}/deploy'
+              cleanDestinationFolder: true
+              overwriteExistingFiles: true
+
+          - template: jobs/version/get.yml@template
+            parameters:
+              dll_path: '$(Pipeline.Workspace)/${{parameters.artifact_name}}/deploy/${{parameters.dll_name}}'
+
+          - task: Docker@2
+            name: build_and_push
+            displayName: 'Build and push'
+            inputs:
+              containerRegistry: ${{ parameters.container_registry }}
+              repository: ${{ parameters.image_name }}
+              command: 'buildAndPush'
+              Dockerfile: '$(Pipeline.Workspace)/templates/Dockerfiles/Dockerfile_${{ parameters.target_framework }}'
+              buildContext: $(Pipeline.Workspace)/${{parameters.artifact_name}}/deploy
+              tags: $(get_version.version)
+              addPipelineData: false
+              addBaseImageData: false

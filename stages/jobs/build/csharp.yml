@@ -10,12 +10,6 @@ parameters:
   type: string
 - name: project_path
   type: string
-- name: pool
-  type: string
-  default: 'Azure Pipelines'
-  values:
-  - 'Azure Pipelines'
-  - 'Self-hosted'
 - name: target_framework
   type: string
   default: 9
