@@ -20,7 +20,7 @@ echo "#####################"
 echo "#  Change version   #"
 echo "#####################"
 
-dotnet setversion $VERSION $PROJECT_PATH
+setversion $VERSION $PROJECT_PATH
 
 echo "#####################"
 
