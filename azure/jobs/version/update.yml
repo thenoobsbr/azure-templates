@@ -5,6 +5,11 @@ parameters:
     type: string
   - name: dll_name
     type: string
+  - name: artifact_name
+    type: string
+  - name: condition
+    type: boolean
+    default: true
   - name: project_path
     type: string
   - name: user_email
