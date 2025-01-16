@@ -77,5 +77,4 @@ jobs:
               containerRegistry: ${{ parameters.container_registry }}
               repository: ${{ parameters.image_name }}
               command: 'push'
-              arguments: --build-arg IMAGE_VERSION=${{ replace(parameters.target_framework, 'net', '') }}-alpine
               tags: $(get_version.version)

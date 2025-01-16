@@ -7,6 +7,10 @@ parameters:
     type: string
   - name: project_path
     type: string
+  - name: user_email
+    type: string
+  - name: user_name
+    type: string
 
 jobs:
   - job: ${{ parameters.name }}
@@ -31,3 +35,5 @@ jobs:
         env:
           DLL_PATH: ${{ parameters.dll_path }}
           PROJECT_PATH: ${{ parameters.project_path }}
+          USER_EMAIL: ${{ parameters.user_email }}
+          USER_NAME: ${{ parameters.user_name }}
