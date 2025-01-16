@@ -3,7 +3,7 @@ parameters:
     type: string
   - name: display_name
     type: string
-  - name: dll_path
+  - name: dll_name
     type: string
   - name: project_path
     type: string
@@ -15,6 +15,8 @@ parameters:
 jobs:
   - job: ${{ parameters.name }}
     displayName: ${{parameters.display_name}}
+    variables:
+      dll_path: $(Pipeline.Workspace)/${{parameters.artifact_name}}/deploy/${{parameters.dll_name}}
     steps:
       - checkout: self
         path: 'project'
@@ -23,9 +25,18 @@ jobs:
       - checkout: 'templates'
         path: 'templates'
 
+      - task: ExtractFiles@1
+        name: extract_artifact
+        displayName: 'Extract artifact'
+        inputs:
+          archiveFilePatterns: '$(Pipeline.Workspace)/${{parameters.artifact_name}}/**/*.zip'
+          destinationFolder: '$(Pipeline.Workspace)/${{parameters.artifact_name}}/deploy'
+          cleanDestinationFolder: true
+          overwriteExistingFiles: true
+
       - template: /azure/steps/version/get.yml@templates
         parameters:
-          dll_path: ${{ parameters.dll_path }}
+          dll_path: $(dll_path)
 
       - task: Bash@3
         name: persist_version
@@ -33,7 +44,7 @@ jobs:
         inputs:
           filePath: '$(Pipeline.Workspace)/templates/scripts/persist_version.sh'
         env:
-          DLL_PATH: ${{ parameters.dll_path }}
+          DLL_PATH: $(dll_path)
           PROJECT_PATH: ${{ parameters.project_path }}
           USER_EMAIL: ${{ parameters.user_email }}
           USER_NAME: ${{ parameters.user_name }}
