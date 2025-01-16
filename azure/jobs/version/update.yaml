@@ -39,10 +39,10 @@ jobs:
           dll_path: $(dll_path)
 
       - task: Bash@3
-        name: persist_version
-        displayName: 'Persist version'
+        name: update_version
+        displayName: 'Update version'
         inputs:
-          filePath: '$(Pipeline.Workspace)/templates/scripts/persist_version.sh'
+          filePath: '$(Pipeline.Workspace)/templates/azure/scripts/update_version.sh'
         env:
           DLL_PATH: $(dll_path)
           PROJECT_PATH: ${{ parameters.project_path }}
