@@ -52,7 +52,7 @@ jobs:
               cleanDestinationFolder: true
               overwriteExistingFiles: true
 
-          - template: /stages/publish/jobs/version/steps/get.yml@templates
+          - template: /azure/steps/version/get.yml@templates
             parameters:
               dll_path: '$(Pipeline.Workspace)/${{parameters.artifact_name}}/deploy/${{parameters.dll_name}}'
 
