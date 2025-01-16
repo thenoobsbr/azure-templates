@@ -28,6 +28,11 @@ parameters:
 - name: increment_version
   type: string
   default: 'patch'
+  values:
+  - 'ignore'
+  - 'major'
+  - 'minor'
+  - 'patch'
 - name: suffix
   type: string
   default: ''
