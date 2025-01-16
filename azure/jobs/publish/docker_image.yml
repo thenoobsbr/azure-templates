@@ -43,23 +43,6 @@ jobs:
           - checkout: 'templates'
             path: 'templates'
 
-          - task: replacetokens@5
-            name: prepare_dockerfile
-            displayName: 'Prepare Dockerfile'
-            inputs:
-              rootDirectory: '$(Pipeline.Workspace)'
-              targetFiles: 'templates/Dockerfiles/Dockerfile_${{ parameters.target_framework }}'
-              encoding: 'auto'
-              tokenPattern: 'default'
-              writeBOM: true
-              actionOnMissing: 'warn'
-              keepToken: false
-              actionOnNoFiles: 'continue'
-              enableTransforms: false
-              enableRecursion: false
-              useLegacyPattern: false
-              enableTelemetry: true
-
           - task: ExtractFiles@1
             name: extract_artifact
             displayName: 'Extract artifact'
@@ -74,14 +57,25 @@ jobs:
               dll_path: '$(Pipeline.Workspace)/${{parameters.artifact_name}}/deploy/${{parameters.dll_name}}'
 
           - task: Docker@2
-            name: build_and_push
-            displayName: 'Build and push'
+            name: build
+            displayName: 'Build image'
             inputs:
               containerRegistry: ${{ parameters.container_registry }}
               repository: ${{ parameters.image_name }}
-              command: 'buildAndPush'
+              command: 'build'
               Dockerfile: '$(Pipeline.Workspace)/templates/Dockerfiles/Dockerfile_${{ parameters.target_framework }}'
               buildContext: $(Pipeline.Workspace)/${{parameters.artifact_name}}/deploy
+              arguments: --build-arg IMAGE_VERSION=${{ replace(parameters.target_framework, 'net', '') }}-alpine
               tags: $(get_version.version)
               addPipelineData: false
               addBaseImageData: false
+
+          - task: Docker@2
+            name: push
+            displayName: 'Push image'
+            inputs:
+              containerRegistry: ${{ parameters.container_registry }}
+              repository: ${{ parameters.image_name }}
+              command: 'push'
+              arguments: --build-arg IMAGE_VERSION=${{ replace(parameters.target_framework, 'net', '') }}-alpine
+              tags: $(get_version.version)

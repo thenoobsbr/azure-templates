@@ -20,7 +20,7 @@ steps:
     name: execute_script
     displayName: 'Execute version script'
     inputs:
-      filePath: '$(Pipeline.Workspace)/templates/scripts/calculate_manual_version.sh'
+      filePath: '$(Pipeline.Workspace)/templates/azure/scripts/calculate.sh'
     env:
       INCREMENT: ${{ parameters.increment}}
       RELEASE: ${{ parameters.release }}

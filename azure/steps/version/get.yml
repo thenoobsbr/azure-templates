@@ -7,6 +7,6 @@ steps:
   name: get_version
   displayName: 'Get version'
   inputs:
-    filePath: '$(Pipeline.Workspace)/templates/scripts/get_version.sh'
+    filePath: '$(Pipeline.Workspace)/templates/azure/scripts/get_version_by_dll.sh'
   env:
     DLL_PATH: ${{ parameters.dll_path }}

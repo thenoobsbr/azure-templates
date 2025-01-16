@@ -1,0 +1,33 @@
+parameters:
+  - name: name
+    type: string
+  - name: display_name
+    type: string
+  - name: dll_path
+    type: string
+  - name: project_path
+    type: string
+
+jobs:
+  - job: ${{ parameters.name }}
+    displayName: ${{parameters.display_name}}
+    steps:
+      - checkout: self
+        path: 'project'
+        persistCredentials: true
+      
+      - checkout: 'templates'
+        path: 'templates'
+
+      - template: /azure/steps/version/get.yml@templates
+        parameters:
+          dll_path: ${{ parameters.dll_path }}
+
+      - task: Bash@3
+        name: persist_version
+        displayName: 'Persist version'
+        inputs:
+          filePath: '$(Pipeline.Workspace)/templates/scripts/persist_version.sh'
+        env:
+          DLL_PATH: ${{ parameters.dll_path }}
+          PROJECT_PATH: ${{ parameters.project_path }}

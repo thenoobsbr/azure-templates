@@ -50,7 +50,7 @@ jobs:
     - checkout: 'templates'
       path: 'templates'
 
-    - template: /stages/build/jobs/version/steps/calculate.yml@templates
+    - template: /azure/steps/version/calculate.yml@templates
       parameters:
         project_path: $(project_absolute_path)
         increment: ${{parameters.increment_version}}
