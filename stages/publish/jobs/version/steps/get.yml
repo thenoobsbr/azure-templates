@@ -1,3 +1,4 @@
+parameters:
 - name: dll_path
   type: string
 
