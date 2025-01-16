@@ -1,7 +1,6 @@
 parameters:
 - name: artifact_name
   type: string
-  default: 'artifact'
 - name: project_path
   type: string
 - name: pool
