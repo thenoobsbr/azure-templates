@@ -22,6 +22,7 @@ jobs:
     displayName: ${{parameters.display_name}}
     condition: and(succeeded(), ${{parameters.condition}})
     variables:
+      project_absolute_path: $(Pipeline.Workspace)/project/${{parameters.project_path}}
       dll_path: $(Pipeline.Workspace)/${{parameters.artifact_name}}/deploy/${{parameters.dll_name}}
     steps:
       - checkout: self
@@ -57,7 +58,8 @@ jobs:
         inputs:
           filePath: '$(Pipeline.Workspace)/templates/azure/scripts/update_version.sh'
         env:
+          VERSION: $(get_version.version)
           DLL_PATH: $(dll_path)
-          PROJECT_PATH: ${{ parameters.project_path }}
+          PROJECT_PATH: $(project_absolute_path)
           USER_EMAIL: ${{ parameters.user_email }}
           USER_NAME: ${{ parameters.user_name }}
