@@ -29,7 +29,13 @@ parameters:
   - 'patch'
 - name: suffix
   type: string
-  default: ''
+  default: 'none'
+  values:
+    - 'none'
+    - 'ci'
+    - 'alpha'
+    - 'beta'
+    - 'rc'
 - name: run_tests
   type: boolean
   default: true

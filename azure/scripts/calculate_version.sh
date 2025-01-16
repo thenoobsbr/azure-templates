@@ -52,7 +52,7 @@ fi
 
 new_version="$major.$minor.$patch"
 
-if [[ $SUFFIX != "" ]]; then
+if [[ $SUFFIX != "none" ]]; then
   new_version="$new_version-$SUFFIX.$RELEASE"
 fi
 
