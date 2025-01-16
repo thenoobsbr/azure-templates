@@ -29,6 +29,7 @@ parameters:
   type: string
   default: 'patch'
   values:
+  - 'ignore'
   - 'major'
   - 'minor'
   - 'patch'
