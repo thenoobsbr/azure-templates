@@ -30,6 +30,13 @@ jobs:
       - checkout: 'templates'
         path: 'templates'
 
+      - task: DownloadPipelineArtifact@2
+        name: download_artifact
+        displayName: 'Download artifact'
+        inputs:
+          artifact: ${{parameters.artifact_name}}
+          path: $(Pipeline.Workspace)/${{parameters.artifact_name}}
+
       - task: ExtractFiles@1
         name: extract_artifact
         displayName: 'Extract artifact'
