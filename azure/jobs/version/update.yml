@@ -20,6 +20,7 @@ parameters:
 jobs:
   - job: ${{ parameters.name }}
     displayName: ${{parameters.display_name}}
+    condition: and(succeeded(), ${{parameters.condition}})
     variables:
       dll_path: $(Pipeline.Workspace)/${{parameters.artifact_name}}/deploy/${{parameters.dll_name}}
     steps:
