@@ -58,6 +58,7 @@ jobs:
         inputs:
           filePath: '$(Pipeline.Workspace)/templates/azure/scripts/update_version.sh'
         env:
+          SOURCE_PATH: $(Pipeline.Workspace)/project
           VERSION: $(get_version.version)
           DLL_PATH: $(dll_path)
           PROJECT_PATH: $(project_absolute_path)
