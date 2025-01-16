@@ -36,6 +36,6 @@ git config --global user.email "${USER_EMAIL}"
 git config --global user.name "${USER_NAME}"
 git add .
 git commit -m ":bookmark: update version"
-git push origin $SOURCE_BRANCH
+git push origin HEAD:$SOURCE_BRANCH
 
 echo "#####################"
