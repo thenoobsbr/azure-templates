@@ -1,4 +1,11 @@
 parameters:
+- name: name
+  type: string
+- name: display_name
+  type: string
+- name: condition
+  type: boolean
+  default: true
 - name: artifact_name
   type: string
 - name: project_path
@@ -9,10 +16,6 @@ parameters:
   values:
   - 'Azure Pipelines'
   - 'Self-hosted'
-- name: name
-  type: string
-- name: display_name
-  type: string
 - name: target_framework
   type: string
   default: 9
@@ -39,7 +42,7 @@ parameters:
 jobs:
   - job: ${{ parameters.name }}
     displayName: ${{ parameters.display_name }}
-    condition: succeeded()
+    condition: and(succeeded(), ${{parameters.condition}})
     variables:
       sdk_version: ${{ parameters.target_framework }}.x
       net_version: net${{ parameters.target_framework }}.0
