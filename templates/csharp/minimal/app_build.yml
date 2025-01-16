@@ -9,7 +9,9 @@ parameters:
   values:
   - 'Azure Pipelines'
   - 'Self-hosted'
-- name: job_name
+- name: name
+  type: string
+- name: display_name
   type: string
 - name: target_framework
   type: string
@@ -35,7 +37,8 @@ parameters:
   default: true
 
 jobs:
-  - job: ${{ parameters.job_name }}
+  - job: ${{ parameters.name }}
+    displayName: ${{ parameters.display_name }}
     condition: succeeded()
     variables:
       sdk_version: ${{ parameters.target_framework }}.x
