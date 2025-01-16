@@ -8,7 +8,7 @@ echo "DLL: $DLL_PATH"
 echo "#####################"
 echo "#    Install tool   #"
 echo "#####################"
-sudo apt install -y binutils
+sudo apt install -y exiftool
 
 echo "#####################"
 
@@ -16,7 +16,7 @@ echo "#####################"
 echo "#    Get version    #"
 echo "#####################"
 
-version=$(strings ${DLL_PATH} | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+' | head -n 1)
+version=$(exiftool ${DLL_PATH} | grep -i ProductVersion)
 
 echo "Version: $version"
 echo "#####################"
