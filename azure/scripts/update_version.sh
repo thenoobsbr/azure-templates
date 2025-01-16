@@ -6,6 +6,7 @@ echo "#####################"
 echo "UserEmail: $USER_EMAIL"
 echo "UserName: $USER_NAME"
 echo "SourcePath: $SOURCE_PATH"
+echo "SourceBranch: $SOURCE_BRANCH"
 echo "ProjectPath: $PROJECT_PATH"
 echo "Version: $VERSION"
 echo "#####################"
@@ -35,6 +36,6 @@ git config --global user.email "${USER_EMAIL}"
 git config --global user.name "${USER_NAME}"
 git add .
 git commit -m ":bookmark: update version"
-git push
+git push origin $SOURCE_BRANCH
 
 echo "#####################"
