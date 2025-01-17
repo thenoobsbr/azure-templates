@@ -80,7 +80,7 @@ jobs:
       inputs:
         command: 'build'
         projects: $(project_absolute_path)
-        arguments: '--no-incremental --no-restore --configuration Release -p:Version=$(calculate_version.version)'
+        arguments: '--no-incremental --no-restore --configuration Release -p:Version=$(calculate_version.new_version)'
 
     - ${{ if eq(parameters.run_tests, true) }}:
       - task: DotNetCoreCLI@2
@@ -120,7 +120,7 @@ jobs:
         command: 'publish'
         publishWebProjects: false
         projects: $(project_absolute_path)
-        arguments: '-c Release -o $(Build.ArtifactStagingDirectory)/$(net_version) -f $(net_version) -p:Version=$(calculate_version.version)'
+        arguments: '-c Release -o $(Build.ArtifactStagingDirectory)/$(net_version) -f $(net_version) -p:Version=$(calculate_version.new_version)'
         zipAfterPublish: true
         modifyOutputPath: true
         configuration: 'Release'
