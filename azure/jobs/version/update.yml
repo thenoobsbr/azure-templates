@@ -5,13 +5,6 @@ parameters:
     type: string
   - name: dll_name
     type: string
-  - name: artifact_name
-    type: string
-  - name: condition
-    type: boolean
-    default: true
-  - name: project_path
-    type: string
   - name: user_email
     type: string
   - name: user_name
@@ -21,9 +14,6 @@ jobs:
   - job: ${{ parameters.name }}
     displayName: ${{parameters.display_name}}
     condition: and(succeeded(), ${{parameters.condition}})
-    variables:
-      project_absolute_path: $(Pipeline.Workspace)/project/${{parameters.project_path}}
-      dll_path: $(Pipeline.Workspace)/${{parameters.artifact_name}}/deploy/${{parameters.dll_name}}
     steps:
       - checkout: self
         path: 'project'
@@ -36,21 +26,16 @@ jobs:
         name: download_artifact
         displayName: 'Download artifact'
         inputs:
-          artifact: ${{parameters.artifact_name}}
-          path: $(Pipeline.Workspace)/${{parameters.artifact_name}}
+          path: $(Pipeline.Workspace)
 
       - task: ExtractFiles@1
         name: extract_artifact
         displayName: 'Extract artifact'
         inputs:
-          archiveFilePatterns: '$(Pipeline.Workspace)/${{parameters.artifact_name}}/**/*.zip'
-          destinationFolder: '$(Pipeline.Workspace)/${{parameters.artifact_name}}/deploy'
+          archiveFilePatterns: '$(Pipeline.Workspace)/**/*.zip'
+          destinationFolder: '$(Pipeline.Workspace)/deploy'
           cleanDestinationFolder: true
           overwriteExistingFiles: true
-
-      - template: /azure/steps/version/get.yml@templates
-        parameters:
-          dll_path: $(dll_path)
 
       - task: Bash@3
         name: update_version
@@ -60,8 +45,7 @@ jobs:
         env:
           SOURCE_BRANCH: $(Build.SourceBranchName)
           SOURCE_PATH: $(Pipeline.Workspace)/project
-          VERSION: $(get_version.version)
-          DLL_PATH: $(dll_path)
-          PROJECT_PATH: $(project_absolute_path)
+          ARTIFACT_PATH: $(Pipeline.Workspace)/deploy
+          PROJECT_PATH: $(Pipeline.Workspace)/project
           USER_EMAIL: ${{ parameters.user_email }}
           USER_NAME: ${{ parameters.user_name }}
