@@ -32,7 +32,7 @@ jobs:
         inputs:
           filePath: '$(Pipeline.Workspace)/templates/azure/scripts/extract_files.sh'
         env:
-          SOURCE_PATH: '$(Pipeline.Workspace)/**/*.zip'
+          SOURCE_PATH: '$(Pipeline.Workspace)'
           DESTINATION_PATH: '$(Pipeline.Workspace)/deploy'
 
       - task: Bash@3

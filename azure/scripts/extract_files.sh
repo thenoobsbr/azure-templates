@@ -17,7 +17,7 @@ echo "######################"
 echo "#  Extracting files  #"
 echo "######################"
 
-for zipFile in "$SOURCE_PATH"; do
+for zipFile in $(find "$SOURCE_PATH" -name "*.zip"); do
     destinationPath="$DESTINATION_PATH/$(basename "$zipFile" .zip)"
     mkdir -p "$destinationPath"
     unzip "$zipFile" -d "$destinationPath"
