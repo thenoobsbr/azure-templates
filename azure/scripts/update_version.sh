@@ -48,7 +48,6 @@ for folder in "$ARTIFACT_PATH"/*; do
   echo "Found project: $project_path"
 
   setversion $version $project_path
-  echo "Updated project: $project_name.csproj with version: $version"
 done
 
 echo "#####################"
