@@ -11,7 +11,7 @@ parameters:
 jobs:
   - job: ${{ parameters.name }}
     displayName: ${{parameters.display_name}}
-    condition: and(succeeded(), ${{parameters.condition}})
+    condition: succeeded()
     steps:
       - checkout: self
         path: 'project'
