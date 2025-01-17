@@ -41,7 +41,7 @@ for folder in "$ARTIFACT_PATH"/*; do
   version=$(exiftool $dll_path | grep "Product Version  " | awk -F ': ' '{print $2}')
   echo "Version: $version"
 
-  project_path=$(find "$SOURCE_FOLDER" -type f -name "$project_name.csproj" | head -n 1)
+  project_path=$(find "$SOURCE_PATH" -type f -name "$project_name.csproj" | head -n 1)
   if [ -z "$project_path" ]; then
     continue
   fi
