@@ -120,12 +120,10 @@ jobs:
         command: 'publish'
         publishWebProjects: false
         projects: $(project_absolute_path)
-        arguments: '-c Release -o $(Build.ArtifactStagingDirectory)/$(net_version) -f $(net_version)'
+        arguments: '-c Release -o $(Build.ArtifactStagingDirectory)/$(net_version) -f $(net_version) -p:Version=$(get_version.version)'
         zipAfterPublish: true
         modifyOutputPath: true
         configuration: 'Release'
-        versioningScheme: byEnvVar
-        versionEnvVar: $[calculate_version.new_version]
 
     - task: PublishPipelineArtifact@1
       displayName: Store Application Artifact
