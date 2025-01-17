@@ -1,4 +1,10 @@
 parameters:
+- name: name
+  type: string
+  default: 'calculate_version'
+- name: display_name
+  type: string
+  default: 'Calculate version'
 - name: increment
   type: string
   default: 'patch'
@@ -17,8 +23,8 @@ parameters:
 
 steps:    
   - task: Bash@3
-    name: execute_script
-    displayName: 'Execute version script'
+    name: ${{ parameters.name }}
+    displayName: ${{ parameters.display_name }}
     inputs:
       filePath: '$(Pipeline.Workspace)/templates/azure/scripts/calculate_version.sh'
     env:
