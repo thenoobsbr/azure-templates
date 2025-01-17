@@ -63,3 +63,9 @@ git commit -m ":bookmark: update version"
 git push origin HEAD:$SOURCE_BRANCH
 
 echo "#####################"
+
+echo "################"
+echo "#     Done     #"
+echo "################"
+
+exit 0

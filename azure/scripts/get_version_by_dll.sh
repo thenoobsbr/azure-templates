@@ -22,3 +22,9 @@ echo "Version: $version"
 echo "#####################"
 
 echo "##vso[task.setvariable variable=version;isOutput=true]$version"
+
+echo "################"
+echo "#     Done     #"
+echo "################"
+
+exit 0

@@ -26,14 +26,14 @@ jobs:
         inputs:
           path: $(Pipeline.Workspace)
 
-      - task: ExtractFiles@1
+      - task: Bash@3
         name: extract_artifact
-        displayName: 'Extract artifact'
+        displayName: 'Extract artifacts'
         inputs:
-          archiveFilePatterns: '$(Pipeline.Workspace)/**/*.zip'
-          destinationFolder: '$(Pipeline.Workspace)/deploy'
-          cleanDestinationFolder: true
-          overwriteExistingFiles: true
+          filePath: '$(Pipeline.Workspace)/templates/azure/scripts/extract_files.sh'
+        env:
+          SOURCE_PATH: '$(Pipeline.Workspace)/**/*.zip'
+          DESTINATION_PATH: '$(Pipeline.Workspace)/deploy'
 
       - task: Bash@3
         name: update_version

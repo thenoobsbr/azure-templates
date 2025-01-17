@@ -66,4 +66,8 @@ echo "#######################################"
 echo "##vso[task.setvariable variable=last_version;isOutput=true]$last_version"
 echo "##vso[task.setvariable variable=new_version;isOutput=true]$new_version"
 
+echo "################"
+echo "#     Done     #"
+echo "################"
+
 exit 0
