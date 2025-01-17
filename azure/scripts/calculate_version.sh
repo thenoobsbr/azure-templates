@@ -28,15 +28,15 @@ if [[ $PROJECT_PATH == *.csproj ]]; then
 else
   cd $PROJECT_PATH
   git fetch --tags --prune
-  last_tag=$(git describe --tags `git rev-list --tags --max-count=1`)
+  last_version=$(git describe --tags `git rev-list --tags --max-count=1`)
   
-  if [[ -z $last_tag ]]; then
-    last_tag="0.0.0"
+  if [[ -z $last_version ]]; then
+    last_version="0.0.0"
   fi
 
-  major="$(echo $last_tag | cut -d'.' -f1)"
-  minor="$(echo $last_tag | cut -d'.' -f2)"
-  patch="$(echo $last_tag | cut -d'.' -f3)"
+  major="$(echo $last_version | cut -d'.' -f1)"
+  minor="$(echo $last_version | cut -d'.' -f2)"
+  patch="$(echo $last_version | cut -d'.' -f3)"
 fi
 
 if [[ $INCREMENT == "major" ]]; then
@@ -56,7 +56,7 @@ if [[ $SUFFIX != "none" ]]; then
   new_version="$new_version-$SUFFIX.$RELEASE"
 fi
 
-echo "Last version: $last_tag"
+echo "Last version: $last_version"
 echo "New version: $new_version"
 echo "Major: $major"
 echo "Minor: $minor"
