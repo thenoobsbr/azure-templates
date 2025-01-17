@@ -3,8 +3,6 @@ parameters:
     type: string
   - name: display_name
     type: string
-  - name: dll_name
-    type: string
   - name: user_email
     type: string
   - name: user_name
