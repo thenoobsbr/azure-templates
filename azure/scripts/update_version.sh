@@ -28,8 +28,11 @@ for folder in "$ARTIFACT_PATH"/*; do
   fi
   
   echo "Found artifact: $folder"
+  
+  project_name=$(basename "$folder")
+  echo "Project name: $project_name"
 
-  dll_path=$(find "$folder" -type f -name "$folder.dll" | head -n 1)
+  dll_path=$(find "$folder" -type f -name "$project_name.dll" | head -n 1)
   if [ -z "$dll_path" ]; then
     continue
   fi
@@ -38,14 +41,14 @@ for folder in "$ARTIFACT_PATH"/*; do
   version=$(exiftool $dll_path | grep "Product Version  " | awk -F ': ' '{print $2}')
   echo "Version: $version"
 
-  project_path=$(find "$SOURCE_FOLDER" -type f -name "$folder.csproj" | head -n 1)
+  project_path=$(find "$SOURCE_FOLDER" -type f -name "$project_name.csproj" | head -n 1)
   if [ -z "$project_path" ]; then
     continue
   fi
   echo "Found project: $project_path"
 
   setversion $version $project_path
-  echo "Updated project: $project_path with version: $version"
+  echo "Updated project: $project_name.csproj with version: $version"
 done
 
 echo "#####################"
