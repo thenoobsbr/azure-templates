@@ -61,7 +61,7 @@ jobs:
               containerRegistry: ${{ parameters.container_registry }}
               repository: ${{ parameters.image_name }}
               command: 'build'
-              Dockerfile: '$(Pipeline.Workspace)/templates/Dockerfiles/Dockerfile_${{ parameters.target_framework }}'
+              Dockerfile: '$(Pipeline.Workspace)/templates/azure/dockerfiles/csharp.Dockerfile'
               buildContext: $(Pipeline.Workspace)/${{parameters.artifact_name}}/deploy
               arguments: --build-arg IMAGE_VERSION=${{ replace(parameters.target_framework, 'net', '') }}-alpine --build-arg DLL_NAME=${{ parameters.dll_name }}
               tags: $(get_version.version)
