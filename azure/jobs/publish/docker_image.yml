@@ -34,8 +34,6 @@ jobs:
     condition: and(succeeded(), ${{parameters.condition}})
     workspace:
       clean: all
-    variables:
-      dll_name: ${{ parameters.dll_name }}
     strategy:
       runOnce:
         deploy:
@@ -65,7 +63,7 @@ jobs:
               command: 'build'
               Dockerfile: '$(Pipeline.Workspace)/templates/Dockerfiles/Dockerfile_${{ parameters.target_framework }}'
               buildContext: $(Pipeline.Workspace)/${{parameters.artifact_name}}/deploy
-              arguments: --build-arg IMAGE_VERSION=${{ replace(parameters.target_framework, 'net', '') }}-alpine
+              arguments: --build-arg IMAGE_VERSION=${{ replace(parameters.target_framework, 'net', '') }}-alpine --build-arg DLL_NAME=${{ parameters.dll_name }}
               tags: $(get_version.version)
               addPipelineData: false
               addBaseImageData: false
