@@ -50,19 +50,19 @@ jobs:
               cleanDestinationFolder: true
               overwriteExistingFiles: true
 
-          - task: Bash@3
-            displayName: 'Create entrypoint script'
-            inputs:
-              targetType: 'inline'
-              script: |
-                cd $(Pipeline.Workspace)/${{parameters.artifact_name}}/deploy
-                echo "#!/bin/bash \n dotnet ${{ parameters.dll_name }}" > ./entrypoint.sh
-                cat ./entrypoint.sh
-
           - template: /azure/steps/version/get.yml@templates
             parameters:
               dll_path: '$(Pipeline.Workspace)/${{parameters.artifact_name}}/deploy/${{parameters.dll_name}}'
 
+          - task: ReplaceTokens@3
+            name: replace_dockerfile_variables
+            displayName: 'Replace dockerfile variables'
+            inputs:
+              sources: '$(Pipeline.Workspace)/templates/azure/dockerfiles/csharp.Dockerfile'
+              additionalVariables: |
+                - DLL_NAME: ${{ parameters.dll_name }}
+                - IMAGE_VERSION: ${{ replace(parameters.target_framework, 'net', '') }}-alpine
+          
           - task: Docker@2
             name: build
             displayName: 'Build image'
@@ -72,7 +72,6 @@ jobs:
               command: 'build'
               Dockerfile: '$(Pipeline.Workspace)/templates/azure/dockerfiles/csharp.Dockerfile'
               buildContext: $(Pipeline.Workspace)/${{parameters.artifact_name}}/deploy
-              arguments: --build-arg IMAGE_VERSION=${{ replace(parameters.target_framework, 'net', '') }}-alpine
               tags: $(get_version.version)
               addPipelineData: false
               addBaseImageData: false
