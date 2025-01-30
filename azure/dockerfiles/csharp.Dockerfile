@@ -9,6 +9,6 @@ COPY . .
 ENV ASPNETCORE_HTTP_PORTS=80
 ENV ASPNETCORE_ENVIRONMENT=Production
 
-RUN chmod +x entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
 
-ENTRYPOINT ["entrypoint.sh"]
+ENTRYPOINT ["/app/entrypoint.sh"]
