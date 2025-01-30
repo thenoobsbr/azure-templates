@@ -5,6 +5,7 @@ WORKDIR /app
 EXPOSE 80
 
 COPY . .
+COPY entrypoint.sh ./entrypoint.sh
 
 ENV ASPNETCORE_HTTP_PORTS=80
 ENV ASPNETCORE_ENVIRONMENT=Production
