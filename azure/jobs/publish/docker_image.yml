@@ -32,6 +32,8 @@ jobs:
     displayName: '${{parameters.display_name}}'
     environment: ${{parameters.environment}}
     condition: and(succeeded(), ${{parameters.condition}})
+    variables:
+      - image_version:  ${{ replace(parameters.target_framework, 'net', '') }}-alpine
     workspace:
       clean: all
     strategy:
@@ -54,15 +56,19 @@ jobs:
             parameters:
               dll_path: '$(Pipeline.Workspace)/${{parameters.artifact_name}}/deploy/${{parameters.dll_name}}'
 
-          - task: ReplaceTokens@3
-            name: replace_dockerfile_variables
-            displayName: 'Replace dockerfile variables'
+          - task: replacetokens@6
+            name: replace_dockerfile
+            displayName: 'Replace dockerfile'
             inputs:
-              sources: '$(Pipeline.Workspace)/templates/azure/dockerfiles/csharp.Dockerfile'
+              root: '$(Pipeline.Workspace)/templates/azure/dockerfiles'
+              sources: 'csharp.Dockerfile'
               additionalVariables: |
-                - DLL_NAME: ${{ parameters.dll_name }}
-                - IMAGE_VERSION: ${{ replace(parameters.target_framework, 'net', '') }}-alpine
-          
+                DLL_NAME: ${{parameters.dll_name}}
+                IMAGE_VERSION: ${{variables.image_version}}
+              useAdditionalVariablesOnly: true
+              ifNoFilesFound: 'error'
+              missingVarLog: 'error'
+
           - task: Docker@2
             name: build
             displayName: 'Build image'
