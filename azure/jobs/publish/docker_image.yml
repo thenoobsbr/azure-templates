@@ -56,7 +56,8 @@ jobs:
               cwd: '$(Pipeline.Workspace)/${{parameters.artifact_name}}/deploy'
               targetType: 'inline'
               script: |
-                echo "#!/bin/bash \n dotnet ${{ parameters.dll_name }}" > entrypoint.sh
+                echo "#!/bin/bash \n dotnet ${{ parameters.dll_name }}" > ./entrypoint.sh
+                ls
 
           - template: /azure/steps/version/get.yml@templates
             parameters:
