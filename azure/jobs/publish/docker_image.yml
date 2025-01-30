@@ -53,9 +53,9 @@ jobs:
           - task: Bash@3
             displayName: 'Create entrypoint script'
             inputs:
-              cwd: '$(Pipeline.Workspace)/${{parameters.artifact_name}}/deploy'
               targetType: 'inline'
               script: |
+                cd $(Pipeline.Workspace)/${{parameters.artifact_name}}/deploy
                 echo "#!/bin/bash \n dotnet ${{ parameters.dll_name }}" > ./entrypoint.sh
                 ls
 
