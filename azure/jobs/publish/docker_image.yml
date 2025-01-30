@@ -57,7 +57,7 @@ jobs:
               script: |
                 cd $(Pipeline.Workspace)/${{parameters.artifact_name}}/deploy
                 echo "#!/bin/bash \n dotnet ${{ parameters.dll_name }}" > ./entrypoint.sh
-                ls
+                cat ./entrypoint.sh
 
           - template: /azure/steps/version/get.yml@templates
             parameters:
