@@ -4,6 +4,11 @@ EXPOSE 80
 
 COPY efbundle /app/efbundle
 
-RUN chmod +x /app/efbundle 
+RUN echo "#!/bin/bash\n\
+  /app/efbundle\
+  --apply\
+  --connection ${CONNECTION_STRING}" > /app/entrypoint.sh &&\
+  chmod +x /app/entrypoint &&\
+  chmod +x /app/efbundle
 
-ENTRYPOINT ["/app/efbundle", "--apply", "--connection", "#{CONNECTION_STRING}#"]
+ENTRYPOINT ["/app/entrypoint"]
