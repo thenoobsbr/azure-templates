@@ -125,9 +125,16 @@ jobs:
         modifyOutputPath: true
         configuration: 'Release'
 
+    - task: DotNetCoreCLI@2
+      displayName: Create EF Bundle
+      inputs:
+        command: 'efbundle'
+        projects: $(project_absolute_path)
+        arguments: '--project $(project_absolute_path) --runtime linux-x64 --output $(Build.ArtifactStagingDirectory)/efbundle'
+
+
     - task: PublishPipelineArtifact@1
       displayName: Store Application Artifact
       inputs:
         targetPath: '$(System.ArtifactsDirectory)'
         artifact: '${{parameters.artifact_name}}'
-          
