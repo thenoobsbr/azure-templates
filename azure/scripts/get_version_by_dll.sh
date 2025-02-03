@@ -21,9 +21,11 @@ version=$(exiftool ${DLL_PATH} | grep "Product Version  " | awk -F ': ' '{print 
 major="$(echo $version | cut -d'.' -f1)"
 minor="$(echo $version | cut -d'.' -f2)"
 patch="$(echo $version | cut -d'.' -f3)"
-suffix="$(echo $version | cut -d'-' -f2)"
+suffix="${patch*-%}"
+patch="${patch%-*}"
+revision="$(echo $version | cut -d'.' -f4)"
 
-version_migration="$major.$minor.$patch-migration-${suffix}"
+version_migration="$major.$minor.$patch-${suffix}-migration.${revision}"
 
 echo "Major: $major"
 echo "Minor: $minor"
