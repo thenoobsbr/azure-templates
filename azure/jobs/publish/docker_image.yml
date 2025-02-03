@@ -106,4 +106,6 @@ jobs:
               containerRegistry: ${{ parameters.container_registry }}
               repository: ${{ parameters.image_name }}
               command: 'push'
-              tags: $(get_version.version) $(get_version.version_migration)
+              tags: |
+                $(get_version.version)
+                $(get_version.version_migration)
