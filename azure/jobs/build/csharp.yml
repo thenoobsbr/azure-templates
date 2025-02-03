@@ -126,12 +126,15 @@ jobs:
         configuration: 'Release'
 
     - task: DotNetCoreCLI@2
-      displayName: Create EF Bundle
+      displayName: Install EF Tool
       inputs:
-        command: 'efbundle'
-        projects: $(project_absolute_path)
-        arguments: '--project $(project_absolute_path) --runtime linux-x64 --output $(Build.ArtifactStagingDirectory)/efbundle'
+        command: custom
+        custom: tool
+        arguments: update dotnet-ef --tool-path tools --ignore-failed-sources
 
+    - bash: |
+          ./tools/dotnet-ef migrations bundle --project $(project_absolute_path) --runtime linux-x64 --output $(Build.ArtifactStagingDirectory)/efbundle
+        displayName: Generate EF bundle
 
     - task: PublishPipelineArtifact@1
       displayName: Store Application Artifact
