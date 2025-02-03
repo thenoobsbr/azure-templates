@@ -87,7 +87,7 @@ jobs:
               addBaseImageData: false
           
           - task: Docker@2
-            name: build
+            name: build_migration
             displayName: 'Build migration image'
             inputs:
               containerRegistry: ${{ parameters.container_registry }}
