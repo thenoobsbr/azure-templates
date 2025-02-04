@@ -1,6 +1,9 @@
-FROM mcr.microsoft.com/dotnet/aspnet:#{IMAGE_VERSION}#
+FROM mcr.microsoft.com/dotnet/runtime:#{IMAGE_VERSION}#
 WORKDIR /app
 EXPOSE 80
+
+# Instala runtime dependencies
+RUN apk add --no-cache icu-libs krb5-libs libintl libssl3
 
 # Copia o executável efbundle
 COPY efbundle /app/efbundle
