@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/aspnet:#{IMAGE_VERSION}#-alpine
+FROM mcr.microsoft.com/dotnet/aspnet:9.0
 WORKDIR /app
 EXPOSE 80
 
