@@ -1,4 +1,4 @@
-FROM alpine:3
+FROM mcr.microsoft.com/dotnet/aspnet:#{IMAGE_VERSION}#
 WORKDIR /app
 EXPOSE 80
 

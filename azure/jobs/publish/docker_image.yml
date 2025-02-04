@@ -37,7 +37,7 @@ jobs:
     condition: and(succeeded(), ${{parameters.condition}})
     variables:
       - name: image_version
-        value:  ${{ replace(parameters.target_framework, 'net', '') }}-alpine
+        value:  ${{ replace(parameters.target_framework, 'net', '') }}
     workspace:
       clean: all
     strategy:
