@@ -1,9 +1,9 @@
-FROM mcr.microsoft.com/dotnet/runtime:#{IMAGE_VERSION}#
+FROM alpine:3
 WORKDIR /app
 EXPOSE 80
 
 # Instala dependências
-RUN apk add --no-cache icu-libs krb5-libs libc6-compat libintl libssl3
+# RUN apk add --no-cache icu-libs krb5-libs libc6-compat libintl libssl3
 
 # Copia o executável efbundle
 COPY efbundle /app/efbundle
