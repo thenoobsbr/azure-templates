@@ -9,7 +9,6 @@ RUN apk add --no-cache \
     icu-libs \
     krb5-libs \
     libgcc \
-    libicu \
     libintl \
     libssl3 \
     libstdc++ \
