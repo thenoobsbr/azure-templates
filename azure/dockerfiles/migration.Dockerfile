@@ -8,6 +8,7 @@ RUN apk add --no-cache \
     curl \
     icu-libs \
     krb5-libs \
+    libc6-compat \
     libgcc \
     libintl \
     libssl3 \
