@@ -1,9 +1,21 @@
-FROM mcr.microsoft.com/dotnet/runtime-deps:#{IMAGE_VERSION}#
+FROM mcr.microsoft.com/dotnet/runtime:#{IMAGE_VERSION}#
 WORKDIR /app
 EXPOSE 80
 
 # Instala dependências
-# RUN apk add --no-cache icu-libs krb5-libs libc6-compat libintl libssl3
+RUN apk add --no-cache \
+    ca-certificates \
+    curl \
+    icu-libs \
+    krb5-libs \
+    libgcc \
+    libicu \
+    libintl \
+    libssl3 \
+    libstdc++ \
+    postgresql-libs \
+    procps \
+    zlib
 
 # Copia o executável efbundle
 COPY efbundle /app/efbundle
