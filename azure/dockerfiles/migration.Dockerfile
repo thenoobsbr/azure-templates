@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/aspnet:9.0
+FROM mcr.microsoft.com/dotnet/runtime-deps:#{IMAGE_VERSION}#
 WORKDIR /app
 EXPOSE 80
 

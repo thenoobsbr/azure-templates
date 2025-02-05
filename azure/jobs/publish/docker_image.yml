@@ -29,15 +29,15 @@ parameters:
 - name: migration_bundle
   type: boolean
   default: true
+- name: image_version
+  type: string
+  default: 9.0.1-alpine3.21-amd64
 
 jobs:
   - deployment: ${{parameters.name}}
     displayName: '${{parameters.display_name}}'
     environment: ${{parameters.environment}}
     condition: and(succeeded(), ${{parameters.condition}})
-    variables:
-      - name: image_version
-        value:  ${{ replace(parameters.target_framework, 'net', '') }}
     workspace:
       clean: all
     strategy:
@@ -68,7 +68,7 @@ jobs:
               sources: '*.Dockerfile'
               additionalVariables: |
                 DLL_NAME: ${{parameters.dll_name}}
-                IMAGE_VERSION: ${{variables.image_version}}
+                IMAGE_VERSION: ${{parameters.image_version}}
               useAdditionalVariablesOnly: true
               ifNoFilesFound: 'error'
               missingVarLog: 'error'
