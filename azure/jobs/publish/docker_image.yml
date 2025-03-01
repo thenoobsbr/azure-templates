@@ -96,7 +96,7 @@ jobs:
               tags: |
                 $(get_version.version)
 
-          ${{ if parameters.migration_bundle }}:
+          - ${{ if eq(parameters.migration_bundle, true) }}:
             - task: Docker@2
               name: build_migration
               displayName: 'Build migration image'
