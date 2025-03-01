@@ -85,27 +85,37 @@ jobs:
               tags: $(get_version.version)
               addPipelineData: false
               addBaseImageData: false
-          
-          - task: Docker@2
-            name: build_migration
-            displayName: 'Build migration image'
-            inputs:
-              containerRegistry: ${{ parameters.container_registry }}
-              repository: ${{ parameters.image_name }}
-              command: 'build'
-              Dockerfile: '$(Pipeline.Workspace)/templates/azure/dockerfiles/migration.Dockerfile'
-              buildContext: $(Pipeline.Workspace)/${{parameters.artifact_name}}
-              tags: $(get_version.version_migration)
-              addPipelineData: false
-              addBaseImageData: false
 
           - task: Docker@2
             name: push
-            displayName: 'Push image'
+            displayName: 'Push app tag'
             inputs:
               containerRegistry: ${{ parameters.container_registry }}
               repository: ${{ parameters.image_name }}
               command: 'push'
               tags: |
                 $(get_version.version)
-                $(get_version.version_migration)
+
+          ${{ if parameters.migration_bundle }}:
+            - task: Docker@2
+              name: build_migration
+              displayName: 'Build migration image'
+              inputs:
+                containerRegistry: ${{ parameters.container_registry }}
+                repository: ${{ parameters.image_name }}
+                command: 'build'
+                Dockerfile: '$(Pipeline.Workspace)/templates/azure/dockerfiles/migration.Dockerfile'
+                buildContext: $(Pipeline.Workspace)/${{parameters.artifact_name}}
+                tags: $(get_version.version_migration)
+                addPipelineData: false
+                addBaseImageData: false
+
+            - task: Docker@2
+              name: push_migration
+              displayName: 'Push migration tag'
+              inputs:
+                containerRegistry: ${{ parameters.container_registry }}
+                repository: ${{ parameters.image_name }}
+                command: 'push'
+                tags: |
+                  $(get_version.version_migration)
