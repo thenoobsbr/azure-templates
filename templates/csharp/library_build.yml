@@ -124,18 +124,6 @@ stages:
             path: 'project'
           - checkout: 'templates'
             path: 'templates'
-          # - script: |
-          #     sudo apt-get update
-          #     sudo apt-get install openjdk-17-jdk -y
-          #     JAVA_HOME_CONTENT='export JAVA_HOME="/usr/lib/jvm/java-17-openjdk-amd64"
-          #     export PATH="$JAVA_HOME/bin:$PATH"'
-              
-          #     echo "$JAVA_HOME_CONTENT" | sudo tee /etc/profile.d/java_home.sh > /dev/null
-              
-          #     sudo chmod +x /etc/profile.d/java_home.sh
-              
-          #     source /etc/profile
-          #   displayName: 'Install Java'
 
           - task: SonarCloudPrepare@3
             inputs:
