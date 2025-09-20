@@ -27,9 +27,9 @@ parameters:
 - name: sonar_token
   type: string
   default: $(SONAR_TOKEN)
-- name: sonar_url
+- name: sonar_service
   type: string
-  default: https://sonarcloud.io
+  default: 'SonarCloud'
 - name: run_tests
   type: boolean
   default: true
@@ -139,9 +139,9 @@ stages:
 
           - task: SonarCloudPrepare@3
             inputs:
-              SonarQube: 'SonarCloud'
+              SonarQube: ${{parameters.sonar_service}}
               organization: ${{parameters.sonar_organization}}
-              scannerMode: 'MSBuild'
+              scannerMode: 'dotnet'
               projectKey: ${{parameters.sonar_project_key}}
               projectVersion: '${{parameters.version}}'
               extraProperties: |
