@@ -124,22 +124,22 @@ stages:
             path: 'project'
           - checkout: 'templates'
             path: 'templates'
-          - script: |
-              sudo apt-get update
-              sudo apt-get install openjdk-17-jdk -y
-              JAVA_HOME_CONTENT='export JAVA_HOME="/usr/lib/jvm/java-17-openjdk-amd64"
-              export PATH="$JAVA_HOME/bin:$PATH"'
+          # - script: |
+          #     sudo apt-get update
+          #     sudo apt-get install openjdk-17-jdk -y
+          #     JAVA_HOME_CONTENT='export JAVA_HOME="/usr/lib/jvm/java-17-openjdk-amd64"
+          #     export PATH="$JAVA_HOME/bin:$PATH"'
               
-              echo "$JAVA_HOME_CONTENT" | sudo tee /etc/profile.d/java_home.sh > /dev/null
+          #     echo "$JAVA_HOME_CONTENT" | sudo tee /etc/profile.d/java_home.sh > /dev/null
               
-              sudo chmod +x /etc/profile.d/java_home.sh
+          #     sudo chmod +x /etc/profile.d/java_home.sh
               
-              source /etc/profile
-            displayName: 'Install Java'
+          #     source /etc/profile
+          #   displayName: 'Install Java'
 
-          - task: SonarCloudPrepare@1
+          - task: SonarCloudPrepare@3
             inputs:
-              SonarCloud: 'SonarCloud'
+              SonarQube: 'SonarCloud'
               organization: ${{parameters.sonar_organization}}
               scannerMode: 'MSBuild'
               projectKey: ${{parameters.sonar_project_key}}
@@ -203,9 +203,13 @@ stages:
                   pathToSources: $(Pipeline.Workspace)/project/src/
                 displayName: Publish coverage
 
-          - task: SonarCloudAnalyze@1
+          - task: SonarCloudAnalyze@3
             displayName: 'Run Code Analysis'
+            inputs:
+              jdkversion: 'JAVA_HOME_17_X64'
 
-          - task: SonarCloudPublish@1
+          - task: SonarCloudPublish@3
             displayName: 'Publish Quality Gate Result'
+            inputs:
+              pollingTimeoutSec: '300'
           
