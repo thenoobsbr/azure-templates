@@ -33,7 +33,7 @@ stages:
   condition: |
     and(
       succeeded(),
-      eq(dependencies.calculate_sem_version.outputs['calculate_version.staging_deploy'], true)
+      eq(dependencies.calculate_sem_version.outputs['calculate_version.staging_deploy'], 'True')
     )
   jobs:
   - ${{ each environment in parameters.environments }}:
