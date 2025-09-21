@@ -11,10 +11,8 @@ parameters:
 - name: depends_on
   type: object
   default:
+  - calculate_sem_version
   - build_package
-- name: condition
-  type: boolean
-  default: succeeded()
 - name: environments
   type: object
   default: 
@@ -32,7 +30,11 @@ stages:
   pool:
     name: ${{parameters.pool}}
   dependsOn: ${{parameters.depends_on}}
-  condition: ${{parameters.condition}}
+  condition: |
+    and(
+      succeeded(),
+      eq(dependencies.calculate_sem_version.outputs['calculate_version.staging_deploy'], true)
+    )
   jobs:
   - ${{ each environment in parameters.environments }}:
     - deployment: package_publish_${{environment}}
