@@ -12,6 +12,9 @@ parameters:
   type: object
   default:
   - build_package
+- name: condition
+  type: boolean
+  default: succeeded()
 - name: environments
   type: object
   default: 
@@ -29,7 +32,7 @@ stages:
   pool:
     name: ${{parameters.pool}}
   dependsOn: ${{parameters.depends_on}}
-  condition: succeeded()
+  condition: ${{parameters.condition}}
   jobs:
   - ${{ each environment in parameters.environments }}:
     - deployment: package_publish_${{environment}}
