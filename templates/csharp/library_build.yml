@@ -150,7 +150,7 @@ stages:
             displayName: 'Restore'
             inputs:
               command: 'restore'
-              projects: '$(Pipeline.Workspace)/project/*.sln;$(Pipeline.Workspace)/project/*.slnx'
+              projects: '$(Pipeline.Workspace)/project/**/*.sln*'
 
           - task: DotNetCoreCLI@2
             displayName: 'Build'
