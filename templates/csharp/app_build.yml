@@ -70,7 +70,7 @@ stages:
       displayName: 'Installing .Net Core SDK'
       inputs:
         packageType: 'sdk'
-        version: ${{ replace(replace(parameters.target_framework, '0', 'x'),  'net',  '') }}
+        version: ${{ replace(replace(parameters.target_framework, '.0', '.x'),  'net',  '') }}
 
     - ${{ if eq(parameters.install_new_relic, true) }}:
       - task: DotNetCoreCLI@2
@@ -181,7 +181,7 @@ stages:
             displayName: 'Installing .Net Core SDK'
             inputs:
               packageType: 'sdk'
-              version: ${{ replace(replace(parameters.target_framework, '0', 'x'),  'net',  '') }}
+              version: ${{ replace(replace(parameters.target_framework, '.0', '.x'),  'net',  '') }}
 
           - task: DotNetCoreCLI@2
             displayName: 'Restore'
